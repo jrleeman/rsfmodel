@@ -3,7 +3,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 model = rsf.RateState()
-velocity,friction,state = model.solve()
+results = model.solve()
+
+velocity = results.velocity
+friction = results.friction
+state = results.state1
 
 print np.shape(np.arange(0,30,0.01))
 print np.shape(velocity)

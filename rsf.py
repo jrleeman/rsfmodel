@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import integrate
 from math import exp,log
+from collections import namedtuple
 
 class RateState(object):
     def __init__(self):
@@ -14,6 +15,13 @@ class RateState(object):
         self.vlp = 10.
         self.time = [0]
         self.dispHist = []
+        self.results = namedtuple("results",["time","displacement","velocity","friction","state1","state2"])
+        self.results.time = []
+        self.results.displacement = []
+        self.results.velocity = []
+        self.results.friction = []
+        self.results.state1 = []
+        self.results.state2 = []
 
     def _integrationStep(self, w, t, p):
         self.time.append(t)
@@ -53,4 +61,8 @@ class RateState(object):
                                 atol=abserr, rtol=relerr)
 
         #return SimResults(velocity=self._vHist, time=wsol[:,0], friction=wsol[:,1])
-        return [self._vHist, wsol[:,0], wsol[:,1]]
+        self.results.friction = wsol[:,0]
+        self.results.state1 = wsol[:,1]
+        self.results.velocity = np.array(self._vHist)
+
+        return self.results
