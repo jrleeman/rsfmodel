@@ -19,7 +19,7 @@ model.model_time = np.arange(0,30.01,0.01)
 
 results = model.solve()
 
-velocity = results.velocity
+velocity = results.slider_velocity
 friction = results.friction
 state = results.state1
 
@@ -34,7 +34,7 @@ t = np.arange(0,30,0.01)
 cjm_disp, cjm_mu = np.loadtxt('cjm_model_comparison/cjm_model.dis',skiprows=2,unpack=True)
 cjm_time, cjm_mu = np.loadtxt('cjm_model_comparison/cjm_model.tim',skiprows=2,unpack=True)
 cjm_state = np.loadtxt('cjm_model_comparison/cjm_model.sta',skiprows=2,unpack=True,usecols=[1])
-cjm_vel = np.loadtxt('cjm_model_comparison/cjm_model.vel',skiprows=2,unpack=True,usecols=[0])
+cjm_vel,cjm_mu2 = np.loadtxt('cjm_model_comparison/cjm_model.vel',skiprows=2,unpack=True)
 cjm_vel = np.exp(cjm_vel)*1.
 
 
@@ -61,5 +61,11 @@ fig = plt.figure(3)
 plt.title('State Variable')
 plt.plot(model.model_time,state,color='k',label='JRL')
 plt.plot(cjm_time,cjm_state,color='r',label='CJM')
+
+fig = plt.figure(4)
+plt.title('Phase')
+#ln(v/v0),mu
+plt.plot(np.log(model.results.slider_velocity/model.vref),model.results.friction,color='k',label='JRL')
+plt.plot(np.log(cjm_vel/1.),cjm_mu2,color='r',label='CJM')
 
 plt.show()
