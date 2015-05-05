@@ -17,7 +17,9 @@ class RateState(object):
         self.vref = 1.
         self.model_time = [] # List of times we want answers at
         # Results of running the model
-        self.results = namedtuple("results",["time","displacement","slider_velocity","friction","state1"])
+        self.results = namedtuple("results",["time","displacement",
+                                             "slider_velocity","friction",
+                                             "state1"])
         # Integrator settings
         self.abserr = 1.0e-12
         self.relerr = 1.0e-12
@@ -31,7 +33,8 @@ class RateState(object):
         mu0, vlpa, a, b, dc, k = p
 
         # Not sure that this is the best way to handle this, but it's a start
-        # Take the time and find the time in our model_times that is the last one smaller than it
+        # Take the time and find the time in our model_times that is the
+        # last one smaller than it
         i = np.argmax(self.model_time>t) - 1
         vlp = vlpa[i]
 
