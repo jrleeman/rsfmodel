@@ -38,7 +38,8 @@ class RateState(object):
         i = np.argmax(self.model_time>t) - 1
         vlp = vlpa[i]
 
-        self.v = self.vref * exp((mu - mu0 - b * log(self.vref * theta / dc)) / a)
+        self.v = self.vref * exp((mu - mu0 - b *
+                                  log(self.vref * theta / dc)) / a)
 
         dmu_dt = k * (vlp - self.v)
         dtheta_dt = 1. - self.v * theta / dc
