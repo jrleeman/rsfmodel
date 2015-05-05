@@ -79,5 +79,7 @@ class RateState(object):
         self.results.friction = wsol[:,0]
         self.results.state1 = wsol[:,1]
         self.results.slider_velocity = self.vref * np.exp((self.results.friction - self.mu0 - self.b * np.log(self.vref * self.results.state1 / self.dc)) / self.a)
-
+        dt = np.ediff1d(self.model_time)
+        self.results.displacement = np.cumsum(self.loadpoint_velocity[:-1] * dt)
+        self.results.displacement = np.insert(self.results.displacement,0,0)
         return self.results
