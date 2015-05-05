@@ -11,6 +11,14 @@ type the command and ? to view the docstring. Examples are provided at the
 GitHub page (https://github.com/jrleeman/rate-and-state) in the README.md file.
 """
 
+__authors__ = ["John Leeman", "Ryan May"]
+__credits__ = ["Chris Marone", "Demian Saffer"]
+__license__ = ""
+__version__ = "1.0."
+__maintainer__ = "John Leeman"
+__email__ = "kd5wxb@gmail.com"
+__status__ = "Development"
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import integrate
@@ -18,7 +26,9 @@ from math import exp,log
 from collections import namedtuple
 
 class RateState(object):
-    """Create a model for frictional behavior"""
+    """
+    Create a model for frictional behavior
+    """
     def __init__(self):
         # Rate and state model parameters
         self.mu0 = 0
@@ -27,7 +37,7 @@ class RateState(object):
         self.dc = 0
         self.k = 0
         self.v = 0
-        self.vlp = 0
+        self.vlp = []
         self.vref = 1.
         self.model_time = [] # List of times we want answers at
         # Results of running the model
@@ -44,18 +54,17 @@ class RateState(object):
         Do the calculation for a time-step
         """
         mu, theta, self.v = w
-        mu0, vlpa, a, b, dc, k = p
+        mu0, vlp, a, b, dc, k = p
 
         # Not sure that this is the best way to handle this, but it's a start
         # Take the time and find the time in our model_times that is the
         # last one smaller than it
         i = np.argmax(self.model_time>t) - 1
-        vlp = vlpa[i]
 
         self.v = self.vref * exp((mu - mu0 - b *
                                   log(self.vref * theta / dc)) / a)
 
-        dmu_dt = k * (vlp - self.v)
+        dmu_dt = k * (vlp[i] - self.v)
         dtheta_dt = 1. - self.v * theta / dc
 
         return [dmu_dt,dtheta_dt]
@@ -79,7 +88,11 @@ class RateState(object):
         self.results.friction = wsol[:,0]
         self.results.state1 = wsol[:,1]
         self.results.slider_velocity = self.vref * np.exp((self.results.friction - self.mu0 - self.b * np.log(self.vref * self.results.state1 / self.dc)) / self.a)
+        self.results.time = self.model_time
+
+        # Calculate displacement from velocity and dt
         dt = np.ediff1d(self.model_time)
         self.results.displacement = np.cumsum(self.loadpoint_velocity[:-1] * dt)
         self.results.displacement = np.insert(self.results.displacement,0,0)
+
         return self.results
