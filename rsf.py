@@ -30,7 +30,9 @@ class RateState(object):
         mu, theta, self.v = w
         mu0, vlpa, a, b, dc, k = p
 
+        # Not sure that this is the best way to handle this, but it's a start
         try:
+            # Need to improve this for genalized (not 100 Hz) cases
             vlp = vlpa[int(t*100)]
         except:
             vlp = vlpa[-1]
