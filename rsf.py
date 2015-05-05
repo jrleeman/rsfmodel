@@ -103,3 +103,16 @@ class RateState(object):
         self.results.displacement = np.insert(self.results.displacement,0,0)
 
         return self.results
+
+    def phasePlot(self):
+        """
+        Make a phase plot of the current model.
+        """
+        # Need to make sure the model has run! Duh!
+
+        fig = plt.figure()
+        ax1 = plt.subplot(111)
+        ax1.plot(np.log(self.results.slider_velocity/self.vref),self.results.friction,color='k')
+        ax1.set_xlabel('Log(V/Vref)')
+        ax1.set_ylabel('Friction')
+        plt.show()
