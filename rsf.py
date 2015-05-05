@@ -31,15 +31,15 @@ class RateState(object):
     """
     def __init__(self):
         # Rate and state model parameters
-        self.mu0 = 0
-        self.a = 0
-        self.b = 0
-        self.dc = 0
-        self.k = 0
-        self.v = 0
-        self.vlp = []
-        self.vref = 1.
-        self.model_time = [] # List of times we want answers at
+        self.mu0 = None
+        self.a = None
+        self.b = None
+        self.dc = None
+        self.k = None
+        self.v = None
+        self.vlp = None
+        self.vref = None
+        self.model_time = None # List of times we want answers at
         # Results of running the model
         self.results = namedtuple("results",["time","displacement",
                                              "slider_velocity","friction",
@@ -69,11 +69,18 @@ class RateState(object):
 
         return [dmu_dt,dtheta_dt]
 
+    def readyCheck(self):
+        return True
+
     def solve(self):
         """
         Runs the integrator to actually solve the model and returns a
         named tuple of results.
         """
+        # Make sure we have everything set before we try to run
+        if self.readyCheck() != True:
+            raise RuntimeError('Not all model parameters set')
+
         # Parameters for the model
         p = [self.mu0,self.loadpoint_velocity,self.a,self.b,self.dc,self.k]
 

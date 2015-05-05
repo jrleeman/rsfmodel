@@ -24,6 +24,7 @@ if test=='step':
     model.k = 1e-3
     model.v = 1.
     model.vlp = 10.
+    model.vref = 1.
 
     # We want to solve for 30 seconds at 100Hz
     model.model_time = np.arange(0,40.01,0.01)
@@ -115,6 +116,7 @@ if test == 'shs':
     model.k = 1e-3
     model.v = 1.
     model.vlp = 10.
+    model.vref = 1.
 
     # We want to solve for 30 seconds at 100Hz
     model.model_time = np.arange(0,310.01,0.01)
@@ -186,6 +188,7 @@ if test == 'exp':
     model.k = 1e-3
     model.v = 1.
     model.vlp = 10.
+    model.vref = 1.
 
     # We want to solve for 30 seconds at 100Hz
     model.model_time = np.arange(0,310.01,0.01)
