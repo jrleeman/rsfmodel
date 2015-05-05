@@ -31,11 +31,9 @@ class RateState(object):
         mu0, vlpa, a, b, dc, k = p
 
         # Not sure that this is the best way to handle this, but it's a start
-        try:
-            # Need to improve this for genalized (not 100 Hz) cases
-            vlp = vlpa[int(t*100)]
-        except:
-            vlp = vlpa[-1]
+        # Take the time and find the time in our model_times that is the last one smaller than it
+        i = np.argmax(self.model_time>t) - 1
+        vlp = vlpa[i]
 
         self.v = self.vref * exp((mu - mu0 - b * log(self.vref * theta / dc)) / a)
 

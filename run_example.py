@@ -21,6 +21,7 @@ lp_velocity = np.ones_like(model.model_time)
 lp_velocity[10*100:] = 10. # duplicate chris' step
 
 # This makes an interesting case for sure.
+lp_velocity[10*100:11*100] = np.linspace(1,10,100) # add an interesting acceleration profile
 #lp_velocity[10*100:15*100] = np.linspace(1,10,500) # add an interesting acceleration profile
 
 # Proof that this matches chris except that he has negative time
