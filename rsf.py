@@ -1,3 +1,16 @@
+#!/usr/bin/env python
+
+"""
+rsf
+
+This module provides rate and state frictional modeling capability.
+
+Documentation is provided throughout the module in the form of docstrings.
+It is easy to view these in the iPython interactive shell environment. Simply
+type the command and ? to view the docstring. Examples are provided at the
+GitHub page (https://github.com/jrleeman/rate-and-state) in the README.md file.
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import integrate
@@ -5,6 +18,7 @@ from math import exp,log
 from collections import namedtuple
 
 class RateState(object):
+    """Create a model for frictional behavior"""
     def __init__(self):
         # Rate and state model parameters
         self.mu0 = 0
