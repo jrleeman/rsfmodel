@@ -21,13 +21,20 @@ class RateState(object):
         # Integrator settings
         self.abserr = 1.0e-12
         self.relerr = 1.0e-12
+        self.loadpoint_velocity = []
 
     def _integrationStep(self, w, t, p):
         """
         Do the calculation for a time-step
         """
         mu, theta, self.v = w
-        mu0, vlp, a, b, dc, k = p
+        mu0, vlpa, a, b, dc, k = p
+
+        try:
+            vlp = vlpa[int(t*100)]
+        except:
+            vlp = vlpa[-1]
+
         self.v = self.vref * exp((mu - mu0 - b * log(self.vref * theta / dc)) / a)
 
         dmu_dt = k * (vlp - self.v)
@@ -41,7 +48,7 @@ class RateState(object):
         named tuple of results.
         """
         # Parameters for the model
-        p = [self.mu0,self.vlp,self.a,self.b,self.dc,self.k]
+        p = [self.mu0,self.loadpoint_velocity,self.a,self.b,self.dc,self.k]
 
         # Initial conditions at t = 0
         # mu = reference friction value, theta = dc/v, velocity = v

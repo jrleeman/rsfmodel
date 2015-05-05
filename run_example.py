@@ -14,8 +14,21 @@ model.v = 1.
 model.vlp = 10.
 
 # We want to solve for 30 seconds at 100Hz
-model.model_time = np.arange(0,30.01,0.01)
+model.model_time = np.arange(0,40.01,0.01)
 
+# We want to slide at 1 um/s for 10 s, then at 10 um/s for 31
+lp_velocity = np.ones_like(model.model_time)
+lp_velocity[10*100:] = 10. # duplicate chris' step
+
+# This makes an interesting case for sure.
+#lp_velocity[10*100:15*100] = np.linspace(1,10,500) # add an interesting acceleration profile
+
+# Proof that this matches chris except that he has negative time
+#for t,v in zip(model.model_time,lp_velocity):
+#    print t-10,v
+
+# Set the model load point velocity, must be same shape as model.model_time
+model.loadpoint_velocity = lp_velocity
 
 results = model.solve()
 
@@ -54,12 +67,12 @@ plt.plot(cjm_vel,color='r',label='CJM')
 
 fig = plt.figure(2)
 plt.title('Friction')
-plt.plot(model.model_time,friction,color='k',label='JRL')
+plt.plot(model.model_time-10.,friction,color='k',label='JRL')
 plt.plot(cjm_time,cjm_mu,color='r',label='CJM')
 
 fig = plt.figure(3)
 plt.title('State Variable')
-plt.plot(model.model_time,state,color='k',label='JRL')
+plt.plot(model.model_time-10.,state,color='k',label='JRL')
 plt.plot(cjm_time,cjm_state,color='r',label='CJM')
 
 fig = plt.figure(4)
@@ -67,5 +80,9 @@ plt.title('Phase')
 #ln(v/v0),mu
 plt.plot(np.log(model.results.slider_velocity/model.vref),model.results.friction,color='k',label='JRL')
 plt.plot(np.log(cjm_vel/1.),cjm_mu2,color='r',label='CJM')
+
+fig = plt.figure(5)
+plt.title('Loading Velocity Profile')
+plt.plot(model.model_time-10., model.loadpoint_velocity)
 
 plt.show()
