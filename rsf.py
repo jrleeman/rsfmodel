@@ -48,6 +48,7 @@ class RateState(object):
         self.abserr = 1.0e-12
         self.relerr = 1.0e-12
         self.loadpoint_velocity = []
+        self.stateLaw = None
 
     def _integrationStep(self, w, t):
         """
@@ -64,9 +65,18 @@ class RateState(object):
                                   log(self.vref * self.theta / self.dc)) / self.a)
 
         dmu_dt = self.k * (self.loadpoint_velocity[i] - self.v)
-        dtheta_dt = 1. - self.v * self.theta / self.dc
+        dtheta_dt = self.stateLaw()
 
         return [dmu_dt,dtheta_dt]
+
+    def dieterichState(self):
+        return 1. - self.v * self.theta / self.dc
+
+    def ruinaState(self):
+        return -1*(self.v * self.theta / self.dc)*log(self.v * self.theta / self.dc)
+
+    def przState(self):
+        return 1. - (self.v * self.theta / (2*self.dc))**2
 
     def readyCheck(self):
         return True
