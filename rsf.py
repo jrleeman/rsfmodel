@@ -49,23 +49,22 @@ class RateState(object):
         self.relerr = 1.0e-12
         self.loadpoint_velocity = []
 
-    def _integrationStep(self, w, t, p):
+    def _integrationStep(self, w, t):
         """
         Do the calculation for a time-step
         """
-        mu, theta, self.v = w
-        mu0, vlp, a, b, dc, k = p
+        self.mu, self.theta, self.v = w
 
         # Not sure that this is the best way to handle this, but it's a start
         # Take the time and find the time in our model_times that is the
         # last one smaller than it
         i = np.argmax(self.model_time>t) - 1
 
-        self.v = self.vref * exp((mu - mu0 - b *
-                                  log(self.vref * theta / dc)) / a)
+        self.v = self.vref * exp((self.mu - self.mu0 - self.b *
+                                  log(self.vref * self.theta / self.dc)) / self.a)
 
-        dmu_dt = k * (vlp[i] - self.v)
-        dtheta_dt = 1. - self.v * theta / dc
+        dmu_dt = self.k * (self.loadpoint_velocity[i] - self.v)
+        dtheta_dt = 1. - self.v * self.theta / self.dc
 
         return [dmu_dt,dtheta_dt]
 
@@ -81,15 +80,13 @@ class RateState(object):
         if self.readyCheck() != True:
             raise RuntimeError('Not all model parameters set')
 
-        # Parameters for the model
-        p = [self.mu0,self.loadpoint_velocity,self.a,self.b,self.dc,self.k]
-
         # Initial conditions at t = 0
         # mu = reference friction value, theta = dc/v, velocity = v
-        w0 = [self.mu0,self.dc/self.v,self.v]
+        self.theta = self.dc/self.v
+        w0 = [self.mu0,self.theta,self.v]
 
         # Solve it
-        wsol = integrate.odeint(self._integrationStep, w0, self.model_time, args=(p,),
+        wsol = integrate.odeint(self._integrationStep, w0, self.model_time,
                                 atol=self.abserr, rtol=self.relerr)
 
         self.results.friction = wsol[:,0]
