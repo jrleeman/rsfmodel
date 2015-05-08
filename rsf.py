@@ -37,7 +37,7 @@ class RateState(object):
         self.dc = None
         self.k = None
         self.v = None
-        self.vlp = None
+        #self.vlp = None
         self.vref = None
         self.model_time = None # List of times we want answers at
         # Results of running the model
@@ -122,4 +122,44 @@ class RateState(object):
         ax1.plot(np.log(self.results.slider_velocity/self.vref),self.results.friction,color='k')
         ax1.set_xlabel('Log(V/Vref)')
         ax1.set_ylabel('Friction')
+        plt.show()
+
+    def dispPlot(self):
+        """
+        Make a standard plot with displacement as the x variable
+        """
+        fig = plt.figure(figsize=(12,9))
+        ax1 = plt.subplot(411)
+        ax2 = plt.subplot(412, sharex=ax1)
+        ax3 = plt.subplot(413, sharex=ax1)
+        ax4 = plt.subplot(414, sharex=ax1)
+        ax1.plot(self.results.displacement,self.results.friction,color='k')
+        ax2.plot(self.results.displacement,self.results.state1,color='k')
+        ax3.plot(self.results.displacement,self.results.slider_velocity,color='k')
+        ax4.plot(self.results.displacement,self.loadpoint_velocity,color='k')
+        ax1.set_ylabel('Friction')
+        ax2.set_ylabel('State')
+        ax3.set_ylabel('Slider Velocity')
+        ax4.set_ylabel('Loadpoint Velocity')
+        ax4.set_xlabel('Displacement')
+        plt.show()
+
+    def timePlot(self):
+        """
+        Make a standard plot with time as the x variable
+        """
+        fig = plt.figure(figsize=(12,9))
+        ax1 = plt.subplot(411)
+        ax2 = plt.subplot(412, sharex=ax1)
+        ax3 = plt.subplot(413, sharex=ax1)
+        ax4 = plt.subplot(414, sharex=ax1)
+        ax1.plot(self.results.time,self.results.friction,color='k')
+        ax2.plot(self.results.time,self.results.state1,color='k')
+        ax3.plot(self.results.time,self.results.slider_velocity,color='k')
+        ax4.plot(self.results.time,self.loadpoint_velocity,color='k')
+        ax1.set_ylabel('Friction')
+        ax2.set_ylabel('State')
+        ax3.set_ylabel('Slider Velocity')
+        ax4.set_ylabel('Loadpoint Velocity')
+        ax4.set_xlabel('Time')
         plt.show()
