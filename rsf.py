@@ -56,15 +56,13 @@ class RateState(object):
         """
         self.mu, self.theta, self.v = w
 
-        # Not sure that this is the best way to handle this, but it's a start
-        # Take the time and find the time in our model_times that is the
-        # last one smaller than it
-        i = np.argmax(self.model_time>t) - 1
-
         self.v = self.vref * exp((self.mu - self.mu0 - self.b *
                                   log(self.vref * self.theta / self.dc)) / self.a)
 
-        dmu_dt = self.k * (self.loadpoint_velocity[i] - self.v)
+        # Find the loadpoint_velocity corresponding to the most recent time
+        # <= the current time.
+        loadpoint_vel = self.loadpoint_velocity[self.model_time<=t][-1]
+        dmu_dt = self.k * (loadpoint_vel - self.v)
         dtheta_dt = self.stateLaw()
 
         return [dmu_dt,dtheta_dt]
