@@ -25,6 +25,16 @@ from scipy import integrate
 from math import exp,log
 from collections import namedtuple
 
+def dieterichState(model):
+    return 1. - model.v * model.theta / model.dc
+
+def ruinaState(model):
+    return -1*(model.v * model.theta / model.dc)*log(model.v * model.theta / model.dc)
+
+def przState(model):
+    return 1. - (model.v * model.theta / (2*model.dc))**2
+
+
 class RateState(object):
     """
     Create a model for frictional behavior
@@ -63,18 +73,9 @@ class RateState(object):
         # <= the current time.
         loadpoint_vel = self.loadpoint_velocity[self.model_time<=t][-1]
         dmu_dt = self.k * (loadpoint_vel - self.v)
-        dtheta_dt = self.stateLaw()
+        dtheta_dt = self.stateLaw(self)
 
         return [dmu_dt,dtheta_dt]
-
-    def dieterichState(self):
-        return 1. - self.v * self.theta / self.dc
-
-    def ruinaState(self):
-        return -1*(self.v * self.theta / self.dc)*log(self.v * self.theta / self.dc)
-
-    def przState(self):
-        return 1. - (self.v * self.theta / (2*self.dc))**2
 
     def readyCheck(self):
         return True

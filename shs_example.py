@@ -12,7 +12,7 @@ model.dc = 10. # Critical slip distance
 model.k = 1e-3 # Normalized System stiffness (friction/micron)
 model.v = 10. # Initial slider velocity, generally is vlp(t=0)
 model.vref = 10. # Reference velocity, generally vlp(t=0)
-model.stateLaw = model.dieterichState # Which state relation we want to use
+model.stateLaw = rsf.dieterichState # Which state relation we want to use
 
 # We want to solve for 40 seconds at 100Hz
 model.model_time = np.arange(0,150.01,0.01)
