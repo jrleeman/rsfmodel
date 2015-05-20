@@ -22,14 +22,17 @@ __status__ = "Development"
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import integrate
-from math import exp,log
+from math import exp, log
 from collections import namedtuple
+
 
 def dieterichState(model):
     return 1. - model.v * model.theta / model.dc
 
+
 def ruinaState(model):
     return -1*(model.v * model.theta / model.dc)*log(model.v * model.theta / model.dc)
+
 
 def przState(model):
     return 1. - (model.v * model.theta / (2*model.dc))**2
@@ -47,16 +50,12 @@ class RateState(object):
         self.dc = None
         self.k = None
         self.v = None
-        #self.vlp = None
+        # self.vlp = None
         self.vref = None
-        self.model_time = None # List of times we want answers at
+        self.model_time = None  # List of times we want answers at
         # Results of running the model
-        self.results = namedtuple("results",["time","displacement",
-                                             "slider_velocity","friction",
-                                             "state1"])
+        self.results = namedtuple("results", ["time", "displacement", "slider_velocity", "friction", "state1"])
         # Integrator settings
-        self.abserr = 1.0e-12
-        self.relerr = 1.0e-12
         self.loadpoint_velocity = []
         self.stateLaw = None
 
@@ -71,20 +70,23 @@ class RateState(object):
 
         # Find the loadpoint_velocity corresponding to the most recent time
         # <= the current time.
-        loadpoint_vel = self.loadpoint_velocity[self.model_time<=t][-1]
+        loadpoint_vel = self.loadpoint_velocity[self.model_time <= t][-1]
         dmu_dt = self.k * (loadpoint_vel - self.v)
         dtheta_dt = self.stateLaw(self)
 
-        return [dmu_dt,dtheta_dt]
+        return [dmu_dt, dtheta_dt]
 
     def readyCheck(self):
         return True
 
-    def solve(self,**kwargs):
+    def solve(self, **kwargs):
         """
         Runs the integrator to actually solve the model and returns a
         named tuple of results.
         """
+        odeint_kwargs = dict(rtol=1e-12, atol=1e-12)
+        odeint_kwargs.update(kwargs)
+
         # Make sure we have everything set before we try to run
         if self.readyCheck() != True:
             raise RuntimeError('Not all model parameters set')
@@ -92,21 +94,20 @@ class RateState(object):
         # Initial conditions at t = 0
         # mu = reference friction value, theta = dc/v, velocity = v
         self.theta = self.dc/self.v
-        w0 = [self.mu0,self.theta,self.v]
+        w0 = [self.mu0, self.theta, self.v]
 
         # Solve it
-        wsol = integrate.odeint(self._integrationStep, w0, self.model_time,
-                                atol=self.abserr, rtol=self.relerr, **kwargs)
+        wsol = integrate.odeint(self._integrationStep, w0, self.model_time, **odeint_kwargs)
 
-        self.results.friction = wsol[:,0]
-        self.results.state1 = wsol[:,1]
+        self.results.friction = wsol[:, 0]
+        self.results.state1 = wsol[:, 1]
         self.results.slider_velocity = self.vref * np.exp((self.results.friction - self.mu0 - self.b * np.log(self.vref * self.results.state1 / self.dc)) / self.a)
         self.results.time = self.model_time
 
         # Calculate displacement from velocity and dt
         dt = np.ediff1d(self.model_time)
         self.results.displacement = np.cumsum(self.loadpoint_velocity[:-1] * dt)
-        self.results.displacement = np.insert(self.results.displacement,0,0)
+        self.results.displacement = np.insert(self.results.displacement, 0, 0)
 
         return self.results
 
@@ -118,7 +119,7 @@ class RateState(object):
 
         fig = plt.figure()
         ax1 = plt.subplot(111)
-        ax1.plot(np.log(self.results.slider_velocity/self.vref),self.results.friction,color='k')
+        ax1.plot(np.log(self.results.slider_velocity/self.vref), self.results.friction, color='k')
         ax1.set_xlabel('Log(V/Vref)')
         ax1.set_ylabel('Friction')
         plt.show()
@@ -127,15 +128,15 @@ class RateState(object):
         """
         Make a standard plot with displacement as the x variable
         """
-        fig = plt.figure(figsize=(12,9))
+        fig = plt.figure(figsize=(12, 9))
         ax1 = plt.subplot(411)
         ax2 = plt.subplot(412, sharex=ax1)
         ax3 = plt.subplot(413, sharex=ax1)
         ax4 = plt.subplot(414, sharex=ax1)
-        ax1.plot(self.results.displacement,self.results.friction,color='k')
-        ax2.plot(self.results.displacement,self.results.state1,color='k')
-        ax3.plot(self.results.displacement,self.results.slider_velocity,color='k')
-        ax4.plot(self.results.displacement,self.loadpoint_velocity,color='k')
+        ax1.plot(self.results.displacement, self.results.friction, color='k')
+        ax2.plot(self.results.displacement, self.results.state1, color='k')
+        ax3.plot(self.results.displacement, self.results.slider_velocity, color='k')
+        ax4.plot(self.results.displacement, self.loadpoint_velocity, color='k')
         ax1.set_ylabel('Friction')
         ax2.set_ylabel('State')
         ax3.set_ylabel('Slider Velocity')
@@ -147,15 +148,15 @@ class RateState(object):
         """
         Make a standard plot with time as the x variable
         """
-        fig = plt.figure(figsize=(12,9))
+        fig = plt.figure(figsize=(12, 9))
         ax1 = plt.subplot(411)
         ax2 = plt.subplot(412, sharex=ax1)
         ax3 = plt.subplot(413, sharex=ax1)
         ax4 = plt.subplot(414, sharex=ax1)
-        ax1.plot(self.results.time,self.results.friction,color='k')
-        ax2.plot(self.results.time,self.results.state1,color='k')
-        ax3.plot(self.results.time,self.results.slider_velocity,color='k')
-        ax4.plot(self.results.time,self.loadpoint_velocity,color='k')
+        ax1.plot(self.results.time, self.results.friction, color='k')
+        ax2.plot(self.results.time, self.results.state1, color='k')
+        ax3.plot(self.results.time, self.results.slider_velocity, color='k')
+        ax4.plot(self.results.time, self.loadpoint_velocity, color='k')
         ax1.set_ylabel('Friction')
         ax2.set_ylabel('State')
         ax3.set_ylabel('Slider Velocity')
