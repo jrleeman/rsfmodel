@@ -63,7 +63,7 @@ class RateState(object):
         """
         Do the calculation for a time-step
         """
-        self.mu, self.theta, self.v = w
+        self.mu, self.theta = w
 
         self.v = self.vref * exp((self.mu - self.mu0 - self.b *
                                   log(self.vref * self.theta / self.dc)) / self.a)
@@ -94,7 +94,7 @@ class RateState(object):
         # Initial conditions at t = 0
         # mu = reference friction value, theta = dc/v, velocity = v
         self.theta = self.dc/self.v
-        w0 = [self.mu0, self.theta, self.v]
+        w0 = [self.mu0, self.theta]
 
         # Solve it
         wsol = integrate.odeint(self._integrationStep, w0, self.model_time, **odeint_kwargs)
