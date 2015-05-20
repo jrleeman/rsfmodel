@@ -37,6 +37,15 @@ def ruinaState(model):
 def przState(model):
     return 1. - (model.v * model.theta / (2*model.dc))**2
 
+class StateRelation(object):
+    """
+    Encapsulates the state relation formulation.
+    """
+    self.b = None
+    self.Dc = None
+    
+    def __init__(self,relation):
+        self.state_evolution = relation
 
 class RateState(object):
     """
