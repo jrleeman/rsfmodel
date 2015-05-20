@@ -80,7 +80,7 @@ class RateState(object):
     def readyCheck(self):
         return True
 
-    def solve(self):
+    def solve(self,**kwargs):
         """
         Runs the integrator to actually solve the model and returns a
         named tuple of results.
@@ -96,7 +96,7 @@ class RateState(object):
 
         # Solve it
         wsol = integrate.odeint(self._integrationStep, w0, self.model_time,
-                                atol=self.abserr, rtol=self.relerr)
+                                atol=self.abserr, rtol=self.relerr, **kwargs)
 
         self.results.friction = wsol[:,0]
         self.results.state1 = wsol[:,1]
