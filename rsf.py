@@ -26,69 +26,83 @@ from math import exp, log
 from collections import namedtuple
 
 
-def dieterichState(model):
-    return 1. - model.v * model.theta / model.dc
-
-
-def ruinaState(model):
-    return -1*(model.v * model.theta / model.dc)*log(model.v * model.theta / model.dc)
-
-
-def przState(model):
-    return 1. - (model.v * model.theta / (2*model.dc))**2
-
 class StateRelation(object):
-    """
-    Encapsulates the state relation formulation.
-    """
-    self.b = None
-    self.Dc = None
-    
-    def __init__(self,relation):
-        self.state_evolution = relation
+    def __init__(self, relation):
+        self.b = None
+        self.Dc = None
+        self.state = None
 
-class RateState(object):
-    """
-    Create a model for frictional behavior
-    """
+    def velocity_componet(self, system):
+        return self.b * log(system.vref * self.state / self.Dc)
+
+
+class DieterichState(StateRelation):
+    def _set_steady_state(self, system):
+        self.state = self.Dc/system.vref
+
+    def evolve_state(self, system):
+        if self.state == None:
+            self.state = _steady_state(self, system)
+        # return dtheta/dt
+        return 1. - system.v * self.state / self.Dc
+
+class ExternalSystem(object):
     def __init__(self):
         # Rate and state model parameters
         self.mu0 = None
         self.a = None
-        self.b = None
-        self.dc = None
         self.k = None
         self.v = None
-        # self.vlp = None
         self.vref = None
-        self.model_time = None  # List of times we want answers at
-        # Results of running the model
-        self.results = namedtuple("results", ["time", "displacement", "slider_velocity", "friction", "state1"])
-        # Integrator settings
-        self.loadpoint_velocity = []
-        self.stateLaw = None
+        self.state_relations = []
 
-    def _integrationStep(self, w, t):
+    def velocity_evolution(self):
+        for state in self.state_relations:
+            v_contribution = state.velocity_componet(self)
+            self.v = self.vref * exp((self.mu - self.mu0 - v_contribution) / self.a)
+            print self.v
+
+    def friction_evolution(self):
+        return self.k * (loadpoint_vel - self.v)
+
+
+class RateState(object):
+    def __init__(self):
+
+        self.model_time = None  # List of times we want answers at
+        self.loadpoint_velocity = []  # Matching list of velocities
+
+        # Results of running the model
+        self.results = namedtuple("results", ["time", "displacement", "slider_velocity", "friction", "states"])
+
+    def _integrationStep(self, w, t, system):
         """
         Do the calculation for a time-step
         """
-        self.mu, self.theta = w
 
-        self.v = self.vref * exp((self.mu - self.mu0 - self.b *
-                                  log(self.vref * self.theta / self.dc)) / self.a)
+        system.mu, self.theta = w
+
+        self.v = system.velocity_evolution()
 
         # Find the loadpoint_velocity corresponding to the most recent time
         # <= the current time.
-        loadpoint_vel = self.loadpoint_velocity[self.model_time <= t][-1]
-        dmu_dt = self.k * (loadpoint_vel - self.v)
-        dtheta_dt = self.stateLaw(self)
+        loadpoint_vel = system.loadpoint_velocity[system.model_time <= t][-1]
 
-        return [dmu_dt, dtheta_dt]
+        # WILL NEED TO REPLACE THIS WITH THE PROPER CALL
+        dmu_dt = system.k * (loadpoint_vel - system.v)
+
+        step_results = [dmu_dt]
+
+        for state_variable in system.state_relations:
+            dtheta_dt = state_variable.evolve_state(system)
+            step_results.append(dtheta_dt)
+
+        return step_results
 
     def readyCheck(self):
         return True
 
-    def solve(self, **kwargs):
+    def solve(self, system, **kwargs):
         """
         Runs the integrator to actually solve the model and returns a
         named tuple of results.
@@ -102,16 +116,19 @@ class RateState(object):
 
         # Initial conditions at t = 0
         # mu = reference friction value, theta = dc/v, velocity = v
-        self.theta = self.dc/self.v
-        w0 = [self.mu0, self.theta]
+        w0 = [system.mu0]
+        for state_variable in system.state_relations:
+            state_variable._set_steady_state(system)
+            w0.append(state_variable.state)
 
         # Solve it
-        wsol = integrate.odeint(self._integrationStep, w0, self.model_time, **odeint_kwargs)
+        wsol = integrate.odeint(self._integrationStep, w0, system.model_time, args=(system,), **odeint_kwargs)
 
         self.results.friction = wsol[:, 0]
-        self.results.state1 = wsol[:, 1]
-        self.results.slider_velocity = self.vref * np.exp((self.results.friction - self.mu0 - self.b * np.log(self.vref * self.results.state1 / self.dc)) / self.a)
-        self.results.time = self.model_time
+        self.results.states = wsol[:, 1:]
+        #self.results.slider_velocity = self.vref * np.exp((self.results.friction - self.mu0 - self.b * np.log(self.vref * self.results.state1 / self.dc)) / self.a)
+        #self.results.slider_velocity = np.ones_like(self.results.friction)
+        self.results.time = system.model_time
 
         # Calculate displacement from velocity and dt
         dt = np.ediff1d(self.model_time)
