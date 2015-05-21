@@ -57,13 +57,14 @@ class ExternalSystem(object):
         self.state_relations = []
 
     def velocity_evolution(self):
+        v_contribution = 0
         for state in self.state_relations:
-            v_contribution = state.velocity_componet(self)
-            self.v = self.vref * exp((self.mu - self.mu0 - v_contribution) / self.a)
-            print self.v
+            v_contribution += state.velocity_componet(self)
+        self.v = self.vref * exp((self.mu - self.mu0 - v_contribution) / self.a)
 
-    def friction_evolution(self):
-        return self.k * (loadpoint_vel - self.v)
+    # This will come back
+    #def friction_evolution(self):
+    #    return self.k * (loadpoint_vel - self.v)
 
 
 class RateState(object):
@@ -82,7 +83,7 @@ class RateState(object):
 
         system.mu, self.theta = w
 
-        self.v = system.velocity_evolution()
+        system.velocity_evolution()
 
         # Find the loadpoint_velocity corresponding to the most recent time
         # <= the current time.
@@ -126,9 +127,11 @@ class RateState(object):
 
         self.results.friction = wsol[:, 0]
         self.results.states = wsol[:, 1:]
+        self.results.time = system.model_time
+
+        # Add back in the post-run velocity calculation
         #self.results.slider_velocity = self.vref * np.exp((self.results.friction - self.mu0 - self.b * np.log(self.vref * self.results.state1 / self.dc)) / self.a)
         #self.results.slider_velocity = np.ones_like(self.results.friction)
-        self.results.time = system.model_time
 
         # Calculate displacement from velocity and dt
         dt = np.ediff1d(self.model_time)
