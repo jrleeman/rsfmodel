@@ -31,22 +31,11 @@ model.loadpoint_velocity = lp_velocity
 solver = rsf.RateState()
 solver.solve(model)
 
-print "Friction results size: ", np.shape(solver.results.friction)
-print "Time results size: ", np.shape(solver.results.time)
-plt.plot(solver.results.time, solver.results.friction)
-plt.show()
-
-plt.plot(solver.results.time, solver.results.states)
-plt.show()
-
-plt.plot(solver.results.time, solver.results.slider_velocity)
-plt.show()
-
 # Make the phase plot
-#solver.phasePlot()
-#
-# # Make a plot in displacement
-# solver.dispPlot()
-#
-# # Make a plot in time
-# solver.timePlot()
+solver.phasePlot(model)
+
+# Make a plot in displacement
+solver.dispPlot(model)
+
+# Make a plot in time
+solver.timePlot(model)

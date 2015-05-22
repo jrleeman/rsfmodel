@@ -125,7 +125,6 @@ class RateState(object):
 
         # Solve it
         wsol = integrate.odeint(self._integrationStep, w0, system.model_time, args=(system,), **odeint_kwargs)
-
         self.results.friction = wsol[:, 0]
         self.results.states = wsol[:, 1:]
         self.results.time = system.model_time
@@ -138,13 +137,13 @@ class RateState(object):
         self.results.slider_velocity = system.vref * np.exp((self.results.friction - system.mu0 - velocity_contribution) / system.a)
 
         # Calculate displacement from velocity and dt
-        dt = np.ediff1d(self.model_time)
-        self.results.displacement = np.cumsum(self.loadpoint_velocity[:-1] * dt)
+        dt = np.ediff1d(system.model_time)
+        self.results.displacement = np.cumsum(system.loadpoint_velocity[:-1] * dt)
         self.results.displacement = np.insert(self.results.displacement, 0, 0)
 
         return self.results
 
-    def phasePlot(self):
+    def phasePlot(self, system):
         """
         Make a phase plot of the current model.
         """
@@ -157,7 +156,7 @@ class RateState(object):
         ax1.set_ylabel('Friction')
         plt.show()
 
-    def dispPlot(self):
+    def dispPlot(self, system):
         """
         Make a standard plot with displacement as the x variable
         """
@@ -167,9 +166,9 @@ class RateState(object):
         ax3 = plt.subplot(413, sharex=ax1)
         ax4 = plt.subplot(414, sharex=ax1)
         ax1.plot(self.results.displacement, self.results.friction, color='k')
-        ax2.plot(self.results.displacement, self.results.state1, color='k')
+        ax2.plot(self.results.displacement, self.results.states, color='k')
         ax3.plot(self.results.displacement, self.results.slider_velocity, color='k')
-        ax4.plot(self.results.displacement, self.loadpoint_velocity, color='k')
+        ax4.plot(self.results.displacement, system.loadpoint_velocity, color='k')
         ax1.set_ylabel('Friction')
         ax2.set_ylabel('State')
         ax3.set_ylabel('Slider Velocity')
@@ -177,7 +176,7 @@ class RateState(object):
         ax4.set_xlabel('Displacement')
         plt.show()
 
-    def timePlot(self):
+    def timePlot(self, system):
         """
         Make a standard plot with time as the x variable
         """
@@ -187,9 +186,9 @@ class RateState(object):
         ax3 = plt.subplot(413, sharex=ax1)
         ax4 = plt.subplot(414, sharex=ax1)
         ax1.plot(self.results.time, self.results.friction, color='k')
-        ax2.plot(self.results.time, self.results.state1, color='k')
+        ax2.plot(self.results.time, self.results.states, color='k')
         ax3.plot(self.results.time, self.results.slider_velocity, color='k')
-        ax4.plot(self.results.time, self.loadpoint_velocity, color='k')
+        ax4.plot(self.results.time, system.loadpoint_velocity, color='k')
         ax1.set_ylabel('Friction')
         ax2.set_ylabel('State')
         ax3.set_ylabel('Slider Velocity')
