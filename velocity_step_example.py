@@ -39,11 +39,14 @@ plt.show()
 plt.plot(solver.results.time, solver.results.states)
 plt.show()
 
-# # Make the phase plot
-# solver.phasePlot()
+plt.plot(solver.results.time, solver.results.slider_velocity)
+plt.show()
+
+# Make the phase plot
+#solver.phasePlot()
 #
 # # Make a plot in displacement
-# model.dispPlot()
+# solver.dispPlot()
 #
 # # Make a plot in time
-# model.timePlot()
+# solver.timePlot()
