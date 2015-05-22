@@ -63,9 +63,8 @@ class ExternalSystem(object):
             v_contribution += state.velocity_componet(self)
         self.v = self.vref * exp((self.mu - self.mu0 - v_contribution) / self.a)
 
-    # This will come back
-    #def friction_evolution(self):
-    #    return self.k * (loadpoint_vel - self.v)
+    def friction_evolution(self,loadpoint_vel):
+        return self.k * (loadpoint_vel - self.v)
 
 
 class RateState(object):
@@ -92,8 +91,7 @@ class RateState(object):
         # <= the current time.
         loadpoint_vel = system.loadpoint_velocity[system.model_time <= t][-1]
 
-        # WILL NEED TO REPLACE THIS WITH THE PROPER CALL
-        dmu_dt = system.k * (loadpoint_vel - system.v)
+        dmu_dt = system.friction_evolution(loadpoint_vel)
 
         step_results = [dmu_dt]
 
