@@ -135,9 +135,14 @@ class RateState(object):
         #self.results.slider_velocity = np.ones_like(self.results.friction)
         velocity_contribution = 0
         for i,state_variable in enumerate(system.state_relations):
+            print "Calculating post fact velocity contribution for stae varible: ", i
             velocity_contribution +=  state_variable.b * np.log(system.vref * self.results.states[i] / state_variable.Dc)
 
-        self.results.slider_velocity = system.vref * np.exp((self.results.friction - system.mu0 - velocity_contribution) / system.a)
+        #self.results.slider_velocity = system.vref * np.exp((self.results.friction - system.mu0 - velocity_contribution) / system.a)
+        state_var = system.state_relations[0]
+        print "States shape: ", np.shape(self.results.states)
+        self.results.slider_velocity = system.vref * np.exp((self.results.friction - system.mu0 - state_var.b * np.log(system.vref * self.results.states[:,0] / state_var.Dc)) / system.a)
+
 
         # Calculate displacement from velocity and dt
         dt = np.ediff1d(self.model_time)
