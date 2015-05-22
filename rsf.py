@@ -44,7 +44,8 @@ class DieterichState(StateRelation):
         if self.state == None:
             self.state = _steady_state(self, system)
         # return dtheta/dt
-        return 1. - system.v * self.state / self.Dc
+        dtheta_dt = 1. - system.v * self.state / self.Dc
+        return dtheta_dt
 
 class ExternalSystem(object):
     def __init__(self):
@@ -81,7 +82,7 @@ class RateState(object):
         Do the calculation for a time-step
         """
 
-        system.mu, self.theta = w
+        system.mu, system.state_relations[0].state = w
 
         system.velocity_evolution()
 
