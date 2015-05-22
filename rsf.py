@@ -33,7 +33,7 @@ class StateRelation(object):
         self.state = None
 
     def velocity_component(self, system):
-        return self.b * log(system.vref * self.state / self.Dc)
+        return self.b * np.log(system.vref * self.state / self.Dc)
 
 
 class DieterichState(StateRelation):
@@ -153,7 +153,8 @@ class RateState(object):
         # Calculate slider velocity after we have solved everything
         velocity_contribution = 0
         for i, state_variable in enumerate(system.state_relations):
-            velocity_contribution += state_variable.b * np.log(system.vref * self.results.states[:, i] / state_variable.Dc)
+            state_variable.state = wsol[:, i+1]
+            velocity_contribution += state_variable.velocity_component(system)
 
         self.results.slider_velocity = system.vref * np.exp((self.results.friction - system.mu0 - velocity_contribution) / system.a)
 
