@@ -82,7 +82,9 @@ class RateState(object):
         Do the calculation for a time-step
         """
 
-        system.mu, system.state_relations[0].state = w
+        system.mu = w[0]
+        for i,state_variable in enumerate(system.state_relations):
+            state_variable.state = w[i+1]
 
         system.velocity_evolution()
 
