@@ -133,6 +133,11 @@ class RateState(object):
         # Add back in the post-run velocity calculation
         #self.results.slider_velocity = self.vref * np.exp((self.results.friction - self.mu0 - self.b * np.log(self.vref * self.results.state1 / self.dc)) / self.a)
         #self.results.slider_velocity = np.ones_like(self.results.friction)
+        velocity_contribution = 0
+        for i,state_variable in enumerate(system.state_relations):
+            velocity_contribution +=  state_variable.b * np.log(system.vref * self.results.states[i] / state_variable.Dc)
+
+        self.results.slider_velocity = system.vref * np.exp((self.results.friction - system.mu0 - velocity_contribution) / system.a)
 
         # Calculate displacement from velocity and dt
         dt = np.ediff1d(self.model_time)
@@ -149,7 +154,7 @@ class RateState(object):
 
         fig = plt.figure()
         ax1 = plt.subplot(111)
-        ax1.plot(np.log(self.results.slider_velocity/self.vref), self.results.friction, color='k')
+        ax1.plot(np.log(self.results.slider_velocity/system.vref), self.results.friction, color='k')
         ax1.set_xlabel('Log(V/Vref)')
         ax1.set_ylabel('Friction')
         plt.show()
