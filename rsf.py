@@ -41,11 +41,12 @@ class DieterichState(StateRelation):
         self.state = self.Dc/system.vref
 
     def evolve_state(self, system):
-        if self.state == None:
+        if self.state is None:
             self.state = _steady_state(self, system)
         # return dtheta/dt
         dtheta_dt = 1. - system.v * self.state / self.Dc
         return dtheta_dt
+
 
 class ExternalSystem(object):
     def __init__(self):
@@ -63,7 +64,7 @@ class ExternalSystem(object):
             v_contribution += state.velocity_componet(self)
         self.v = self.vref * exp((self.mu - self.mu0 - v_contribution) / self.a)
 
-    def friction_evolution(self,loadpoint_vel):
+    def friction_evolution(self, loadpoint_vel):
         return self.k * (loadpoint_vel - self.v)
 
 
@@ -82,7 +83,7 @@ class RateState(object):
         """
 
         system.mu = w[0]
-        for i,state_variable in enumerate(system.state_relations):
+        for i, state_variable in enumerate(system.state_relations):
             state_variable.state = w[i+1]
 
         system.velocity_evolution()
@@ -117,7 +118,6 @@ class RateState(object):
             raise RuntimeError('Not all model parameters set')
 
         # Initial conditions at t = 0
-        # mu = reference friction value, theta = dc/v, velocity = v
         w0 = [system.mu0]
         for state_variable in system.state_relations:
             state_variable._set_steady_state(system)
@@ -130,12 +130,10 @@ class RateState(object):
         self.results.states = wsol[:, 1:]
         self.results.time = system.model_time
 
-        # Add back in the post-run velocity calculation
-        #self.results.slider_velocity = self.vref * np.exp((self.results.friction - self.mu0 - self.b * np.log(self.vref * self.results.state1 / self.dc)) / self.a)
-        #self.results.slider_velocity = np.ones_like(self.results.friction)
+        # Calculate slider velocity after we have solved everything
         velocity_contribution = 0
-        for i,state_variable in enumerate(system.state_relations):
-            velocity_contribution +=  state_variable.b * np.log(system.vref * self.results.states[:,i] / state_variable.Dc)
+        for i, state_variable in enumerate(system.state_relations):
+            velocity_contribution += state_variable.b * np.log(system.vref * self.results.states[:, i] / state_variable.Dc)
 
         self.results.slider_velocity = system.vref * np.exp((self.results.friction - system.mu0 - velocity_contribution) / system.a)
 
