@@ -44,8 +44,29 @@ class DieterichState(StateRelation):
         if self.state is None:
             self.state = _steady_state(self, system)
         # return dtheta/dt
-        dtheta_dt = 1. - system.v * self.state / self.Dc
-        return dtheta_dt
+        return 1. - system.v * self.state / self.Dc
+
+
+class RuinaState(StateRelation):
+    def _set_steady_state(self, system):
+        self.state = self.Dc/system.vref
+
+    def evolve_state(self, system):
+        if self.state is None:
+            self.state = _steady_state(self, system)
+        # return dtheta/dt
+        return -1 * (system.v * self.state / self.Dc) * log(system.v * self.state / self.Dc)
+
+
+class PrzState(StateRelation):
+    def _set_steady_state(self, system):
+        self.state = 2 * self.Dc / system.vref
+
+    def evolve_state(self, system):
+        if self.state is None:
+            self.state = _steady_state(self, system)
+        # return dtheta/dt
+        return 1. - (system.v * self.state / (2 * self.Dc))**2
 
 
 class ExternalSystem(object):
