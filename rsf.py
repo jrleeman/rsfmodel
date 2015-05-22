@@ -32,7 +32,7 @@ class StateRelation(object):
         self.Dc = None
         self.state = None
 
-    def velocity_componet(self, system):
+    def velocity_component(self, system):
         return self.b * log(system.vref * self.state / self.Dc)
 
 
@@ -82,7 +82,7 @@ class ExternalSystem(object):
     def velocity_evolution(self):
         v_contribution = 0
         for state in self.state_relations:
-            v_contribution += state.velocity_componet(self)
+            v_contribution += state.velocity_component(self)
         self.v = self.vref * exp((self.mu - self.mu0 - v_contribution) / self.a)
 
     def friction_evolution(self, loadpoint_vel):
