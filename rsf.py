@@ -69,15 +69,11 @@ class PrzState(StateRelation):
         return 1. - (system.v * self.state / (2 * self.Dc))**2
 
 
-class ExternalSystem(object):
+class LoadingSystem(object):
     def __init__(self):
-        # Rate and state model parameters
-        self.mu0 = None
-        self.a = None
         self.k = None
-        self.v = None
-        self.vref = None
-        self.state_relations = []
+        self.time = None  # List of times we want answers at
+        self.loadpoint_velocity = []  # Matching list of velocities
 
     def velocity_evolution(self):
         v_contribution = 0
@@ -89,13 +85,13 @@ class ExternalSystem(object):
         return self.k * (loadpoint_vel - self.v)
 
 
-class RateState(object):
+class Model(LoadingSystem):
     def __init__(self):
-
-        self.model_time = None  # List of times we want answers at
-        self.loadpoint_velocity = []  # Matching list of velocities
-
-        # Results of running the model
+        self.mu0 = None
+        self.a = None
+        self.vref = None
+        self.slider_velocity = None
+        self.state_relations = []
         self.results = namedtuple("results", ["time", "displacement", "slider_velocity", "friction", "states"])
 
     def _integrationStep(self, w, t, system):
@@ -111,7 +107,7 @@ class RateState(object):
 
         # Find the loadpoint_velocity corresponding to the most recent time
         # <= the current time.
-        loadpoint_vel = system.loadpoint_velocity[system.model_time <= t][-1]
+        loadpoint_vel = system.loadpoint_velocity[system.time <= t][-1]
 
         dmu_dt = system.friction_evolution(loadpoint_vel)
 
@@ -126,7 +122,7 @@ class RateState(object):
     def readyCheck(self):
         return True
 
-    def solve(self, system, **kwargs):
+    def solve(self, **kwargs):
         """
         Runs the integrator to actually solve the model and returns a
         named tuple of results.
@@ -139,81 +135,81 @@ class RateState(object):
             raise RuntimeError('Not all model parameters set')
 
         # Initial conditions at t = 0
-        w0 = [system.mu0]
-        for state_variable in system.state_relations:
-            state_variable._set_steady_state(system)
+        w0 = [self.mu0]
+        for state_variable in self.state_relations:
+            state_variable._set_steady_state(self)
             w0.append(state_variable.state)
 
         # Solve it
-        wsol = integrate.odeint(self._integrationStep, w0, system.model_time, args=(system,), **odeint_kwargs)
+        wsol = integrate.odeint(self._integrationStep, w0, self.time, args=(self,), **odeint_kwargs)
         self.results.friction = wsol[:, 0]
         self.results.states = wsol[:, 1:]
-        self.results.time = system.model_time
+        self.results.time = self.time
 
         # Calculate slider velocity after we have solved everything
         velocity_contribution = 0
-        for i, state_variable in enumerate(system.state_relations):
+        for i, state_variable in enumerate(self.state_relations):
             state_variable.state = wsol[:, i+1]
-            velocity_contribution += state_variable.velocity_component(system)
+            velocity_contribution += state_variable.velocity_component(self)
 
-        self.results.slider_velocity = system.vref * np.exp((self.results.friction - system.mu0 - velocity_contribution) / system.a)
+        self.results.slider_velocity = self.vref * np.exp((self.results.friction - self.mu0 - velocity_contribution) / self.a)
 
         # Calculate displacement from velocity and dt
-        dt = np.ediff1d(system.model_time)
-        self.results.displacement = np.cumsum(system.loadpoint_velocity[:-1] * dt)
+        dt = np.ediff1d(self.time)
+        self.results.displacement = np.cumsum(self.loadpoint_velocity[:-1] * dt)
         self.results.displacement = np.insert(self.results.displacement, 0, 0)
 
         return self.results
 
-    def phasePlot(self, system):
-        """
-        Make a phase plot of the current model.
-        """
-        # Need to make sure the model has run! Duh!
+def phasePlot(system):
+    """
+    Make a phase plot of the current model.
+    """
+    # Need to make sure the model has run! Duh!
 
-        fig = plt.figure()
-        ax1 = plt.subplot(111)
-        ax1.plot(np.log(self.results.slider_velocity/system.vref), self.results.friction, color='k')
-        ax1.set_xlabel('Log(V/Vref)')
-        ax1.set_ylabel('Friction')
-        plt.show()
+    fig = plt.figure()
+    ax1 = plt.subplot(111)
+    ax1.plot(np.log(system.results.slider_velocity/system.vref), system.results.friction, color='k')
+    ax1.set_xlabel('Log(V/Vref)')
+    ax1.set_ylabel('Friction')
+    plt.show()
 
-    def dispPlot(self, system):
-        """
-        Make a standard plot with displacement as the x variable
-        """
-        fig = plt.figure(figsize=(12, 9))
-        ax1 = plt.subplot(411)
-        ax2 = plt.subplot(412, sharex=ax1)
-        ax3 = plt.subplot(413, sharex=ax1)
-        ax4 = plt.subplot(414, sharex=ax1)
-        ax1.plot(self.results.displacement, self.results.friction, color='k')
-        ax2.plot(self.results.displacement, self.results.states, color='k')
-        ax3.plot(self.results.displacement, self.results.slider_velocity, color='k')
-        ax4.plot(self.results.displacement, system.loadpoint_velocity, color='k')
-        ax1.set_ylabel('Friction')
-        ax2.set_ylabel('State')
-        ax3.set_ylabel('Slider Velocity')
-        ax4.set_ylabel('Loadpoint Velocity')
-        ax4.set_xlabel('Displacement')
-        plt.show()
+def dispPlot(system):
+    """
+    Make a standard plot with displacement as the x variable
+    """
+    fig = plt.figure(figsize=(12, 9))
+    ax1 = plt.subplot(411)
+    ax2 = plt.subplot(412, sharex=ax1)
+    ax3 = plt.subplot(413, sharex=ax1)
+    ax4 = plt.subplot(414, sharex=ax1)
+    ax1.plot(system.results.displacement, system.results.friction, color='k')
+    ax2.plot(system.results.displacement, system.results.states, color='k')
+    ax3.plot(system.results.displacement, system.results.slider_velocity, color='k')
+    ax4.plot(system.results.displacement, system.loadpoint_velocity, color='k')
+    ax1.set_ylabel('Friction')
+    ax2.set_ylabel('State')
+    ax3.set_ylabel('Slider Velocity')
+    ax4.set_ylabel('Loadpoint Velocity')
+    ax4.set_xlabel('Displacement')
+    plt.show()
 
-    def timePlot(self, system):
-        """
-        Make a standard plot with time as the x variable
-        """
-        fig = plt.figure(figsize=(12, 9))
-        ax1 = plt.subplot(411)
-        ax2 = plt.subplot(412, sharex=ax1)
-        ax3 = plt.subplot(413, sharex=ax1)
-        ax4 = plt.subplot(414, sharex=ax1)
-        ax1.plot(self.results.time, self.results.friction, color='k')
-        ax2.plot(self.results.time, self.results.states, color='k')
-        ax3.plot(self.results.time, self.results.slider_velocity, color='k')
-        ax4.plot(self.results.time, system.loadpoint_velocity, color='k')
-        ax1.set_ylabel('Friction')
-        ax2.set_ylabel('State')
-        ax3.set_ylabel('Slider Velocity')
-        ax4.set_ylabel('Loadpoint Velocity')
-        ax4.set_xlabel('Time')
-        plt.show()
+def timePlot(system):
+    """
+    Make a standard plot with time as the x variable
+    """
+    fig = plt.figure(figsize=(12, 9))
+    ax1 = plt.subplot(411)
+    ax2 = plt.subplot(412, sharex=ax1)
+    ax3 = plt.subplot(413, sharex=ax1)
+    ax4 = plt.subplot(414, sharex=ax1)
+    ax1.plot(system.results.time, system.results.friction, color='k')
+    ax2.plot(system.results.time, system.results.states, color='k')
+    ax3.plot(system.results.time, system.results.slider_velocity, color='k')
+    ax4.plot(system.results.time, system.loadpoint_velocity, color='k')
+    ax1.set_ylabel('Friction')
+    ax2.set_ylabel('State')
+    ax3.set_ylabel('Slider Velocity')
+    ax4.set_ylabel('Loadpoint Velocity')
+    ax4.set_xlabel('Time')
+    plt.show()
