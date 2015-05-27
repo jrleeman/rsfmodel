@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import rsf
 
-model = rsf.Model()
+model = rsf.ExternalSystem()
 
 # Set model initial conditions
 model.mu0 = 0.6 # Friction initial (at the reference velocity)
@@ -15,26 +15,31 @@ state1 = rsf.DieterichState(model)
 state1.b = 0.01  # Empirical coefficient for the evolution effect
 state1.Dc = 10.  # Critical slip distance
 
-model.state_relations = [state1] # Which state relation we want to use
+state2 = rsf.DieterichState(model)
+state2.b = 0.001  # Empirical coefficient for the evolution effect
+state2.Dc = 5.  # Critical slip distance
+
+model.state_relations = [state1,state2] # Which state relation we want to use
 
 # We want to solve for 40 seconds at 100Hz
-model.time = np.arange(0,40.01,0.01)
+model.model_time = np.arange(0,40.01,0.01)
 
 # We want to slide at 1 um/s for 10 s, then at 10 um/s for 31
-lp_velocity = np.ones_like(model.time)
+lp_velocity = np.ones_like(model.model_time)
 lp_velocity[10*100:] = 10. # Velocity after 10 seconds is 10 um/s
 
 # Set the model load point velocity, must be same shape as model.model_time
 model.loadpoint_velocity = lp_velocity
 
 # Run the model!
-model.solve()
+solver = rsf.RateState()
+solver.solve(model)
 
 # Make the phase plot
-rsf.phasePlot(model)
+solver.phasePlot(model)
 
 # Make a plot in displacement
-rsf.dispPlot(model)
+solver.dispPlot(model)
 
 # Make a plot in time
-rsf.timePlot(model)
+solver.timePlot(model)
