@@ -99,6 +99,12 @@ class PrzState(StateRelation):
 
 
 class NagataState(StateRelation):
+    """
+    The Nagata state relation as proposed by Nagata et al. (2012):
+
+    .. math::
+    \frac{d\theta}{dt} =  1 - \frac{V_\text{slider} \theta}{D_c} - \frac{c}{b}\theta\frac{d\mu}{dt}
+    """
     def __init__(self):
         self.c = None
 
