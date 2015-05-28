@@ -27,38 +27,67 @@ from collections import namedtuple
 
 
 class StateRelation(object):
+    """
+    Abstract state relation object that contains the generally used atributes
+    in state relations and the contribution to slider velocity for each state.
+    """
     def __init__(self, relation):
         self.b = None
         self.Dc = None
         self.state = None
 
     def velocity_component(self, system):
+        """
+        General velocity contribution from this state variable
+
+        .. math::
+        V_\text{contribution} = b \text{ln}\left(\frac{V_0 \theta}{D_c}\right)
+        """
         return self.b * np.log(system.vref * self.state / self.Dc)
 
 
 class DieterichState(StateRelation):
+    """
+    The slowness or Dieterich state relation as proposed by Jim Dieterich (1979)
+
+
+    .. math::
+    \frac{d\theta}{dt} = 1 - \frac{V_\text{slider} \theta}{D_c}
+    """
     def _set_steady_state(self, system):
         self.state = self.Dc/system.vref
 
     def evolve_state(self, system):
         if self.state is None:
             self.state = _steady_state(self, system)
-        # return dtheta/dt
+
         return 1. - system.v * self.state / self.Dc
 
 
 class RuinaState(StateRelation):
+    """
+    The slip or Ruina state relation as proposed by Andy Ruina (1983)
+
+    .. math::
+    \frac{d\theta}{dt} =  -\frac{V_\text{slider} \theta}{D_c} \text{ln}\left(\frac{V_\text{slider} \theta}{D_c}\right)
+    """
     def _set_steady_state(self, system):
         self.state = self.Dc/system.vref
 
     def evolve_state(self, system):
         if self.state is None:
             self.state = _steady_state(self, system)
-        # return dtheta/dt
+
         return -1 * (system.v * self.state / self.Dc) * log(system.v * self.state / self.Dc)
 
 
 class PrzState(StateRelation):
+    """
+    The PRZ state relation as proposed by Perrin, Rice, and Zheng (1995):
+
+    .. math::
+    \frac{d\theta}{dt} =  1 - \left(\frac{V_\text{slider} \theta}{2D_c}\right) ^2
+    """
     def _set_steady_state(self, system):
         self.state = 2 * self.Dc / system.vref
 
@@ -70,6 +99,7 @@ class PrzState(StateRelation):
 
 
 class LoadingSystem(object):
+    """ Contains attributes relating to the external loading system """
     def __init__(self):
         self.k = None
         self.time = None  # List of times we want answers at
@@ -86,18 +116,19 @@ class LoadingSystem(object):
 
 
 class Model(LoadingSystem):
+    """ Houses the model coefficients and does the integration """
     def __init__(self):
         self.mu0 = None
         self.a = None
         self.vref = None
         self.slider_velocity = None
         self.state_relations = []
-        self.results = namedtuple("results", ["time", "displacement", "slider_velocity", "friction", "states"])
+        self.results = namedtuple("results", ["time", "displacement",
+                                              "slider_velocity", "friction",
+                                              "states"])
 
     def _integrationStep(self, w, t, system):
-        """
-        Do the calculation for a time-step
-        """
+        """ Do the calculation for a time-step """
 
         system.mu = w[0]
         for i, state_variable in enumerate(system.state_relations):
@@ -141,7 +172,8 @@ class Model(LoadingSystem):
             w0.append(state_variable.state)
 
         # Solve it
-        wsol = integrate.odeint(self._integrationStep, w0, self.time, args=(self,), **odeint_kwargs)
+        wsol = integrate.odeint(self._integrationStep, w0, self.time,
+                                args=(self,), **odeint_kwargs)
         self.results.friction = wsol[:, 0]
         self.results.states = wsol[:, 1:]
         self.results.time = self.time
@@ -152,7 +184,9 @@ class Model(LoadingSystem):
             state_variable.state = wsol[:, i+1]
             velocity_contribution += state_variable.velocity_component(self)
 
-        self.results.slider_velocity = self.vref * np.exp((self.results.friction - self.mu0 - velocity_contribution) / self.a)
+        self.results.slider_velocity = self.vref * np.exp(
+                                       (self.results.friction - self.mu0 -
+                                        velocity_contribution) / self.a)
 
         # Calculate displacement from velocity and dt
         dt = np.ediff1d(self.time)
@@ -161,23 +195,20 @@ class Model(LoadingSystem):
 
         return self.results
 
-def phasePlot(system):
-    """
-    Make a phase plot of the current model.
-    """
-    # Need to make sure the model has run! Duh!
 
+def phasePlot(system):
+    """ Make a phase plot of the current model. """
     fig = plt.figure()
     ax1 = plt.subplot(111)
-    ax1.plot(np.log(system.results.slider_velocity/system.vref), system.results.friction, color='k')
+    v_ratio = np.log(system.results.slider_velocity/system.vref)
+    ax1.plot(v_ratio, system.results.friction, color='k')
     ax1.set_xlabel('Log(V/Vref)')
     ax1.set_ylabel('Friction')
     plt.show()
 
+
 def dispPlot(system):
-    """
-    Make a standard plot with displacement as the x variable
-    """
+    """ Make a standard plot with displacement as the x variable """
     fig = plt.figure(figsize=(12, 9))
     ax1 = plt.subplot(411)
     ax2 = plt.subplot(412, sharex=ax1)
@@ -194,10 +225,9 @@ def dispPlot(system):
     ax4.set_xlabel('Displacement')
     plt.show()
 
+
 def timePlot(system):
-    """
-    Make a standard plot with time as the x variable
-    """
+    """ Make a standard plot with time as the x variable """
     fig = plt.figure(figsize=(12, 9))
     ax1 = plt.subplot(411)
     ax2 = plt.subplot(412, sharex=ax1)
