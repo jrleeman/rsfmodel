@@ -98,6 +98,19 @@ class PrzState(StateRelation):
         return 1. - (system.v * self.state / (2 * self.Dc))**2
 
 
+class NagataState(StateRelation):
+    def __init__(self):
+        self.c = None
+
+    def _set_steady_state(self, system):
+        self.state = self.Dc / system.vref
+
+    def evolve_state(self, system):
+        if self.state is None:
+            self.state = _steady_state(self, system)
+        # return dtheta/dt
+        return 1. - (system.v * self.state / self.Dc) - (self.c / self.b * self.state * system.dmu_dt)
+
 class LoadingSystem(object):
     """ Contains attributes relating to the external loading system """
     def __init__(self):
@@ -113,7 +126,6 @@ class LoadingSystem(object):
 
     def friction_evolution(self, loadpoint_vel):
         return self.k * (loadpoint_vel - self.v)
-
 
 class Model(LoadingSystem):
     """ Houses the model coefficients and does the integration """
@@ -140,12 +152,11 @@ class Model(LoadingSystem):
         # <= the current time.
         loadpoint_vel = system.loadpoint_velocity[system.time <= t][-1]
 
-        dmu_dt = system.friction_evolution(loadpoint_vel)
-
-        step_results = [dmu_dt]
+        self.dmu_dt = system.friction_evolution(loadpoint_vel)
+        step_results = [self.dmu_dt]
 
         for state_variable in system.state_relations:
-            dtheta_dt = state_variable.evolve_state(system)
+            dtheta_dt = state_variable.evolve_state(self)
             step_results.append(dtheta_dt)
 
         return step_results
