@@ -40,9 +40,8 @@ class StateRelation(object):
         """
         General velocity contribution from this state variable
 
-                                 V0 * theta
-        v_contribution = b * ln(------------)
-                                     Dc
+        .. math::
+        V_\text{contribution} = b \text{ln}\left(\frac{V_0 \theta}{D_c}\right)
         """
         return self.b * np.log(system.vref * self.state / self.Dc)
 
@@ -51,10 +50,9 @@ class DieterichState(StateRelation):
     """
     The slowness or Dieterich state relation as proposed by Jim Dieterich (1979)
 
-    dtheta        Vslider * theta
-    ------ = 1 - ------------------
-      dt                 Dc
 
+    .. math::
+    \frac{d\theta}{dt} = 1 - \frac{V_\text{slider} \theta}{D_c}
     """
     def _set_steady_state(self, system):
         self.state = self.Dc/system.vref
@@ -70,10 +68,8 @@ class RuinaState(StateRelation):
     """
     The slip or Ruina state relation as proposed by Andy Ruina (1983)
 
-    dtheta         Vslider * theta         Vslider * theta
-    ------ = -1 * ------------------  ln(------------------)
-      dt                  Dc                     Dc
-
+    .. math::
+    \frac{d\theta}{dt} =  -\frac{V_\text{slider} \theta}{D_c} \text{ln}\left(\frac{V_\text{slider} \theta}{D_c}\right)
     """
     def _set_steady_state(self, system):
         self.state = self.Dc/system.vref
@@ -89,10 +85,8 @@ class PrzState(StateRelation):
     """
     The PRZ state relation as proposed by Perrin, Rice, and Zheng (1995):
 
-    dtheta         Vslider * theta
-    ------ = 1 - (------------------)^2
-      dt                2 * Dc
-
+    .. math::
+    \frac{d\theta}{dt} =  1 - \left(\frac{V_\text{slider} \theta}{2D_c}\right) ^2
     """
     def _set_steady_state(self, system):
         self.state = 2 * self.Dc / system.vref
