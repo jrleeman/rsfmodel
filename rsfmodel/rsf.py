@@ -1,24 +1,3 @@
-#!/usr/bin/env python
-
-"""
-rsf
-
-This module provides rate and state frictional modeling capability.
-
-Documentation is provided throughout the module in the form of docstrings.
-It is easy to view these in the iPython interactive shell environment. Simply
-type the command and ? to view the docstring. Examples are provided at the
-GitHub page (https://github.com/jrleeman/rate-and-state) in the README.md file.
-"""
-
-__authors__ = ["John Leeman", "Ryan May"]
-__credits__ = ["Chris Marone", "Demian Saffer"]
-__license__ = ""
-__version__ = "1.0."
-__maintainer__ = "John Leeman"
-__email__ = "kd5wxb@gmail.com"
-__status__ = "Development"
-
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import integrate

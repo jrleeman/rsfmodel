@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import rsf
+from rsfmodel import rsf
 
 model = rsf.Model()
 
@@ -15,7 +15,11 @@ state1 = rsf.DieterichState(model)
 state1.b = 0.01  # Empirical coefficient for the evolution effect
 state1.Dc = 10.  # Critical slip distance
 
-model.state_relations = [state1] # Which state relation we want to use
+state2 = rsf.DieterichState(model)
+state2.b = 0.001  # Empirical coefficient for the evolution effect
+state2.Dc = 5.  # Critical slip distance
+
+model.state_relations = [state1,state2] # Which state relation we want to use
 
 # We want to solve for 40 seconds at 100Hz
 model.time = np.arange(0,40.01,0.01)
