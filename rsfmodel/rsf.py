@@ -8,7 +8,7 @@ from collections import namedtuple
 class StateRelation(object):
     """
     Abstract state relation object that contains the generally used atributes
-    in state relations and the contribution to slider velocity for each state.
+    in state relations (b,Dc).
     """
     def __init__(self, relation):
         self.b = None
@@ -17,7 +17,7 @@ class StateRelation(object):
 
     def velocity_component(self, system):
         """
-        General velocity contribution from this state variable
+        General velocity contribution from a given state variable
 
         .. math::
         V_\text{contribution} = b \text{ln}\left(\frac{V_0 \theta}{D_c}\right)
@@ -96,6 +96,7 @@ class NagataState(StateRelation):
         # return dtheta/dt
         return 1. - (system.v * self.state / self.Dc) - (self.c / self.b * self.state * system.dmu_dt)
 
+
 class LoadingSystem(object):
     """ Contains attributes relating to the external loading system """
     def __init__(self):
@@ -111,6 +112,7 @@ class LoadingSystem(object):
 
     def friction_evolution(self, loadpoint_vel):
         return self.k * (loadpoint_vel - self.v)
+
 
 class Model(LoadingSystem):
     """ Houses the model coefficients and does the integration """
