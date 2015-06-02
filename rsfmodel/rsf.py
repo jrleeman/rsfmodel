@@ -124,7 +124,7 @@ class Model(LoadingSystem):
         self.state_relations = []
         self.results = namedtuple("results", ["time", "displacement",
                                               "slider_velocity", "friction",
-                                              "states"])
+                                              "states", "slider_displacement"])
 
     def _integrationStep(self, w, t, system):
         """ Do the calculation for a time-step """
@@ -190,6 +190,10 @@ class Model(LoadingSystem):
         dt = np.ediff1d(self.time)
         self.results.displacement = np.cumsum(self.loadpoint_velocity[:-1] * dt)
         self.results.displacement = np.insert(self.results.displacement, 0, 0)
+
+        # Calculate the slider displacement
+        self.results.slider_displacement = np.cumsum(self.results.slider_velocity[:-1] * dt)
+        self.results.slider_displacement = np.insert(self.results.slider_displacement, 0, 0)
 
         return self.results
 
