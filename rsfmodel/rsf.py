@@ -194,15 +194,38 @@ class Model(LoadingSystem):
         return self.results
 
 
-def phasePlot(system):
+def phasePlot(system, fig=None, ax1=None):
     """ Make a phase plot of the current model. """
-    fig = plt.figure()
-    ax1 = plt.subplot(111)
+    if fig is None:
+        fig = plt.figure(figsize=(8,7))
+
+    if ax1 is None:
+        ax1 = plt.subplot(111)
+
     v_ratio = np.log(system.results.slider_velocity/system.vref)
-    ax1.plot(v_ratio, system.results.friction, color='k')
-    ax1.set_xlabel('Log(V/Vref)')
-    ax1.set_ylabel('Friction')
+    ax1.plot(v_ratio, system.results.friction, color='k', linewidth=2)
+
+    ylims = ax1.get_ylim()
+    xlims = ax1.get_xlim()
+
+    # Plot lines of constant a that are in the view
+    y_line = system.a * np.array(xlims)
+    for mu in np.arange(0,ylims[1],0.005):
+        y_line_plot = y_line + mu
+        if max(y_line_plot) > ylims[0]:
+            ax1.plot(xlims,y_line_plot,color='k',linestyle='--')
+
+    # Plot a line of rate dependence for the 1 state variable case only
+    if len(system.state_relations) < 2:
+        mu_rate_dependence = system.mu0 + (system.a - system.state_relations[0].b)*np.array(xlims)
+        ax1.plot(xlims,mu_rate_dependence,color='k',linestyle='--')
+
+    ax1.set_xlabel(r'ln$\frac{V}{V_{ref}}$', fontsize=16, labelpad=20)
+    ax1.set_ylabel(r'$\mu$',fontsize=16)
+    ax1.set_xlim(xlims)
+    ax1.set_ylim(ylims)
     plt.show()
+    return fig, ax1
 
 
 def dispPlot(system):
