@@ -192,10 +192,14 @@ class Model(LoadingSystem):
         return self.results
 
 
-def phasePlot(system):
+def phasePlot(system, fig=None, ax1=None):
     """ Make a phase plot of the current model. """
-    fig = plt.figure(figsize=(8,7))
-    ax1 = plt.subplot(111)
+    if fig is None:
+        fig = plt.figure(figsize=(8,7))
+
+    if ax1 is None:
+        ax1 = plt.subplot(111)
+
     v_ratio = np.log(system.results.slider_velocity/system.vref)
     ax1.plot(v_ratio, system.results.friction, color='k', linewidth=2)
 
@@ -219,6 +223,7 @@ def phasePlot(system):
     ax1.set_xlim(xlims)
     ax1.set_ylim(ylims)
     plt.show()
+    return fig, ax1
 
 
 def dispPlot(system):
