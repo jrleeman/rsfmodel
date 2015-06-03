@@ -76,19 +76,24 @@ class TestDeiterichOneStateVar2(object):
         self.model.state_relations = [state1]
         self.model.time = np.arange(0,40.01,1.)
         lp_velocity = np.ones_like(self.model.time)
-        lp_velocity[10*100:] = 10.
+        lp_velocity[10*1:] = 10.
         self.model.loadpoint_velocity = lp_velocity
         self.model.solve()
 
     def test_friction(self):
-        mu_true = np.array([ 0.6       ,  0.6       ,  0.6       ,  0.6       ,  0.6       ,
-        0.6       ,  0.6       ,  0.6       ,  0.6       ,  0.6       ,
-        0.6       ,  0.60720485,  0.60186637,  0.5840091 ,  0.58563096,
-        0.58899543,  0.58998186,  0.58879751,  0.58803412,  0.58825653,
-        0.58858313,  0.58860319,  0.58848625,  0.58844431,  0.58847472,
-        0.58849913,  0.58849522,  0.58848506,  0.58848348,  0.58848674,
-        0.5884883 ,  0.58848756,  0.58848677,  0.5884868 ,  0.58848711,
-        0.58848718,  0.5884871 ,  0.58848704,  0.58848706,  0.58848708,
-        0.58848708])
-
+        mu_true = np.array(
+          [0.6, 0.6, 0.6, 0.6,
+           0.6, 0.6, 0.6, 0.6,
+           0.6, 0.6, 0.6, 0.60720485,
+           0.60186637, 0.5840091, 0.58563096, 0.58899543,
+           0.58998186, 0.58879751, 0.58803412, 0.58825653,
+           0.58858313, 0.58860319, 0.58848625, 0.58844431,
+           0.58847472, 0.58849913, 0.58849522, 0.58848506,
+           0.58848348, 0.58848674, 0.5884883, 0.58848756,
+           0.58848677, 0.5884868, 0.58848711, 0.58848718,
+           0.5884871, 0.58848704, 0.58848706, 0.58848708,
+           0.58848708])
+        rsf.phasePlot(self.model)
+        print np.min(self.model.results.friction), np.max(self.model.results.friction)
+        print np.min(self.model.results.slider_velocity), np.max(self.model.results.slider_velocity)
         np.testing.assert_almost_equal(self.model.results.friction,mu_true,8)
