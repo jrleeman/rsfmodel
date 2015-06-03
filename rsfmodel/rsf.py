@@ -124,7 +124,7 @@ class Model(LoadingSystem):
         self.state_relations = []
         self.results = namedtuple("results", ["time", "displacement",
                                               "slider_velocity", "friction",
-                                              "states"])
+                                              "states", "slider_displacement"])
 
     def _integrationStep(self, w, t, system):
         """ Do the calculation for a time-step """
@@ -187,11 +187,18 @@ class Model(LoadingSystem):
                                         velocity_contribution) / self.a)
 
         # Calculate displacement from velocity and dt
-        dt = np.ediff1d(self.time)
-        self.results.displacement = np.cumsum(self.loadpoint_velocity[:-1] * dt)
-        self.results.displacement = np.insert(self.results.displacement, 0, 0)
+        self.results.displacement = self._calculateDisplacement(self.loadpoint_velocity)
+
+        # Calculate the slider displacement
+        self.results.slider_displacement = self._calculateDisplacement(self.results.slider_velocity)
 
         return self.results
+
+    def _calculateDisplacement(self, velocity):
+        dt = np.ediff1d(self.results.time)
+        displacement = np.cumsum(velocity[:-1] * dt)
+        displacement = np.insert(displacement, 0, 0)
+        return displacement
 
 
 def phasePlot(system, fig=None, ax1=None):
