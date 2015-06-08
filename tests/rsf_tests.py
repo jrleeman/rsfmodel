@@ -99,4 +99,4 @@ class TestDeiterichOneStateVar(object):
            270., 280., 290., 300.,
            310.])
 
-        np.testing.assert_almost_equal(self.model.results.displacement, truth, 8)
+        np.testing.assert_almost_equal(self.model.results.loadpoint_displacement, truth, 8)

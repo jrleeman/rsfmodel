@@ -122,7 +122,7 @@ class Model(LoadingSystem):
         self.vref = None
         self.slider_velocity = None
         self.state_relations = []
-        self.results = namedtuple("results", ["time", "displacement",
+        self.results = namedtuple("results", ["time", "loadping_displacement",
                                               "slider_velocity", "friction",
                                               "states", "slider_displacement"])
 
@@ -187,7 +187,7 @@ class Model(LoadingSystem):
                                         velocity_contribution) / self.a)
 
         # Calculate displacement from velocity and dt
-        self.results.displacement = self._calculateDisplacement(self.loadpoint_velocity)
+        self.results.loadpoint_displacement = self._calculateDisplacement(self.loadpoint_velocity)
 
         # Calculate the slider displacement
         self.results.slider_displacement = self._calculateDisplacement(self.results.slider_velocity)
@@ -242,10 +242,10 @@ def dispPlot(system):
     ax2 = plt.subplot(412, sharex=ax1)
     ax3 = plt.subplot(413, sharex=ax1)
     ax4 = plt.subplot(414, sharex=ax1)
-    ax1.plot(system.results.displacement, system.results.friction, color='k')
-    ax2.plot(system.results.displacement, system.results.states, color='k')
-    ax3.plot(system.results.displacement, system.results.slider_velocity, color='k')
-    ax4.plot(system.results.displacement, system.loadpoint_velocity, color='k')
+    ax1.plot(system.results.loadpoint_displacement, system.results.friction, color='k')
+    ax2.plot(system.results.loadpoint_displacement, system.results.states, color='k')
+    ax3.plot(system.results.loadpoint_displacement, system.results.slider_velocity, color='k')
+    ax4.plot(system.results.loadpoint_displacement, system.loadpoint_velocity, color='k')
     ax1.set_ylabel('Friction')
     ax2.set_ylabel('State')
     ax3.set_ylabel('Slider Velocity')
