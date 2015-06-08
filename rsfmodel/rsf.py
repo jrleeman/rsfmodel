@@ -38,7 +38,7 @@ class DieterichState(StateRelation):
 
     def evolve_state(self, system):
         if self.state is None:
-            self.state = _steady_state(self, system)
+            self.state = _set_steady_state(self, system)
 
         return 1. - system.v * self.state / self.Dc
 
@@ -55,7 +55,7 @@ class RuinaState(StateRelation):
 
     def evolve_state(self, system):
         if self.state is None:
-            self.state = _steady_state(self, system)
+            self.state = _set_steady_state(self, system)
 
         return -1 * (system.v * self.state / self.Dc) * log(system.v * self.state / self.Dc)
 
@@ -72,7 +72,7 @@ class PrzState(StateRelation):
 
     def evolve_state(self, system):
         if self.state is None:
-            self.state = _steady_state(self, system)
+            self.state = _set_steady_state(self, system)
         # return dtheta/dt
         return 1. - (system.v * self.state / (2 * self.Dc))**2
 
@@ -122,7 +122,7 @@ class Model(LoadingSystem):
         self.vref = None
         self.slider_velocity = None
         self.state_relations = []
-        self.results = namedtuple("results", ["time", "loadping_displacement",
+        self.results = namedtuple("results", ["time", "loadpoint_displacement",
                                               "slider_velocity", "friction",
                                               "states", "slider_displacement"])
 
