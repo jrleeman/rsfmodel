@@ -5,7 +5,7 @@ from rsfmodel import rsf
 
 # This is really just the Ruina realtion, but let's pretend we invented it!
 # We'll inherit attributes from rsf.StateRelation, but you wouldn't have to.
-# It does provide velocity contribution calcualtion for us though!
+# It does provide velocity contribution calculation for us though!
 
 
 class MyStateRelation(rsf.StateRelation):
