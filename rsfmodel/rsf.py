@@ -38,7 +38,7 @@ class DieterichState(StateRelation):
 
     def evolve_state(self, system):
         if self.state is None:
-            self.state = _steady_state(self, system)
+            self.state = _set_steady_state(self, system)
 
         return 1. - system.v * self.state / self.Dc
 
@@ -55,7 +55,7 @@ class RuinaState(StateRelation):
 
     def evolve_state(self, system):
         if self.state is None:
-            self.state = _steady_state(self, system)
+            self.state = _set_steady_state(self, system)
 
         return -1 * (system.v * self.state / self.Dc) * log(system.v * self.state / self.Dc)
 
@@ -68,13 +68,23 @@ class PrzState(StateRelation):
     \frac{d\theta}{dt} =  1 - \left(\frac{V_\text{slider} \theta}{2D_c}\right) ^2
     """
     def _set_steady_state(self, system):
-        self.state = 2 * self.Dc / system.vref
+        self.state = 2 * self.Dc / system.v
+        self.prz_vref = system.vref/(2*self.Dc)
 
     def evolve_state(self, system):
         if self.state is None:
-            self.state = _steady_state(self, system)
+            self.state = _set_steady_state(self, system)
         # return dtheta/dt
         return 1. - (system.v * self.state / (2 * self.Dc))**2
+
+    def velocity_component(self, system):
+        """
+        Perrin-Rice velocity contribution
+
+        .. math::
+        V_\text{contribution} = b \text{ln}\left(V_{\text{prz}0} \theta\right)
+        """
+        return self.b * np.log(self.prz_vref * self.state)
 
 
 class NagataState(StateRelation):
@@ -122,7 +132,7 @@ class Model(LoadingSystem):
         self.vref = None
         self.slider_velocity = None
         self.state_relations = []
-        self.results = namedtuple("results", ["time", "loadping_displacement",
+        self.results = namedtuple("results", ["time", "loadpoint_displacement",
                                               "slider_velocity", "friction",
                                               "states", "slider_displacement"])
 
@@ -204,7 +214,7 @@ class Model(LoadingSystem):
 def phasePlot(system, fig=None, ax1=None):
     """ Make a phase plot of the current model. """
     if fig is None:
-        fig = plt.figure(figsize=(8,7))
+        fig = plt.figure(figsize=(8, 7))
 
     if ax1 is None:
         ax1 = plt.subplot(111)
@@ -217,18 +227,18 @@ def phasePlot(system, fig=None, ax1=None):
 
     # Plot lines of constant a that are in the view
     y_line = system.a * np.array(xlims)
-    for mu in np.arange(0,ylims[1],0.005):
+    for mu in np.arange(0, ylims[1], 0.005):
         y_line_plot = y_line + mu
         if max(y_line_plot) > ylims[0]:
-            ax1.plot(xlims,y_line_plot,color='k',linestyle='--')
+            ax1.plot(xlims, y_line_plot, color='k', linestyle='--')
 
     # Plot a line of rate dependence for the 1 state variable case only
     if len(system.state_relations) < 2:
         mu_rate_dependence = system.mu0 + (system.a - system.state_relations[0].b)*np.array(xlims)
-        ax1.plot(xlims,mu_rate_dependence,color='k',linestyle='--')
+        ax1.plot(xlims, mu_rate_dependence, color='k', linestyle='--')
 
     ax1.set_xlabel(r'ln$\frac{V}{V_{ref}}$', fontsize=16, labelpad=20)
-    ax1.set_ylabel(r'$\mu$',fontsize=16)
+    ax1.set_ylabel(r'$\mu$', fontsize=16)
     ax1.set_xlim(xlims)
     ax1.set_ylim(ylims)
     plt.show()
