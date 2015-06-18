@@ -232,10 +232,12 @@ def phasePlot(system, fig=None, ax1=None):
         if max(y_line_plot) > ylims[0]:
             ax1.plot(xlims, y_line_plot, color='k', linestyle='--')
 
-    # Plot a line of rate dependence for the 1 state variable case only
-    if len(system.state_relations) < 2:
-        mu_rate_dependence = system.mu0 + (system.a - system.state_relations[0].b)*np.array(xlims)
-        ax1.plot(xlims, mu_rate_dependence, color='k', linestyle='--')
+    # Plot a line of rate dependence "Steady State Line"
+    state_b_sum = 0
+    for state in system.state_relations:
+        state_b_sum += state.b
+    mu_rate_dependence = system.mu0 + (system.a - state_b_sum)*np.array(xlims)
+    ax1.plot(xlims, mu_rate_dependence, color='k', linestyle='--')
 
     ax1.set_xlabel(r'ln$\frac{V}{V_{ref}}$', fontsize=16, labelpad=20)
     ax1.set_ylabel(r'$\mu$', fontsize=16)
