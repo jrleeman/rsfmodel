@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 from scipy import integrate
 from math import exp, log
 from collections import namedtuple
@@ -246,6 +247,29 @@ def phasePlot(system, fig=None, ax1=None):
     plt.show()
     return fig, ax1
 
+def phasePlot3D(system, fig=None, ax1=None, state_variable=2):
+    """ Make a 3D phase plot of the current model. """
+
+    if np.shape(system.results.states)[1] < 2:
+        raise ValueError('Must be a multi state-variable system for 3D plotting')
+
+    if fig is None:
+        fig = plt.figure(figsize=(8, 7))
+
+    if ax1 is None:
+        ax1 = fig.gca(projection='3d')
+
+    v_ratio = np.log(system.results.slider_velocity/system.vref)
+    ax1.plot(v_ratio, system.results.states[:,state_variable-1], system.results.friction, color='k', linewidth=2)
+
+    ax1.set_xlabel(r'ln$\frac{V}{V_{ref}}$', fontsize=16)
+    ax1.set_ylabel(r'$\theta_%d$' %state_variable, fontsize=16)
+    ax1.set_zlabel(r'$\mu$', fontsize=16)
+    ax1.xaxis._axinfo['label']['space_factor'] = 2.5
+    ax1.yaxis._axinfo['label']['space_factor'] = 2.
+    ax1.zaxis._axinfo['label']['space_factor'] = 2.
+    plt.show()
+    return fig, ax1
 
 def dispPlot(system):
     """ Make a standard plot with displacement as the x variable """
