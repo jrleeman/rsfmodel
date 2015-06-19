@@ -131,7 +131,6 @@ class Model(LoadingSystem):
         self.mu0 = 0.6
         self.a = None
         self.vref = None
-        #self.slider_velocity = None
         self.state_relations = []
         self.results = namedtuple("results", ["time", "loadpoint_displacement",
                                               "slider_velocity", "friction",
