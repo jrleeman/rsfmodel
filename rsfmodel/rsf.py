@@ -128,10 +128,10 @@ class LoadingSystem(object):
 class Model(LoadingSystem):
     """ Houses the model coefficients and does the integration """
     def __init__(self):
-        self.mu0 = None
+        self.mu0 = 0.6
         self.a = None
         self.vref = None
-        self.slider_velocity = None
+        #self.slider_velocity = None
         self.state_relations = []
         self.results = namedtuple("results", ["time", "loadpoint_displacement",
                                               "slider_velocity", "friction",
@@ -160,6 +160,28 @@ class Model(LoadingSystem):
         return step_results
 
     def readyCheck(self):
+        if self.a == None:
+            return False
+        elif self.vref == None:
+            return False
+        elif self.state_relations == []:
+            return False
+        elif self.k == None:
+            return False
+        elif self.time == None:
+            return False
+        elif self.loadpoint_velocity == []:
+            return False
+
+        for state_relation in self.state_relations:
+            if state_relation.b == None:
+                return False
+            elif state_relation.Dc == None:
+                return False
+
+        if len(self.time) != len(self.loadpoint_velocity):
+            return False
+
         return True
 
     def solve(self, **kwargs):
