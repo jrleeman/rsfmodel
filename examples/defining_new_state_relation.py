@@ -28,7 +28,7 @@ model.k = 1e-3  # Normalized System stiffness (friction/micron)
 model.v = 1.  # Initial slider velocity, generally is vlp(t=0)
 model.vref = 1.  # Reference velocity, generally vlp(t=0)
 
-state1 = MyStateRelation(model)
+state1 = MyStateRelation()
 state1.b = 0.005  # Empirical coefficient for the evolution effect
 state1.Dc = 10.  # Critical slip distance
 
