@@ -11,7 +11,7 @@ class TestDeiterichOneStateVar(object):
         self.model.k = 1e-3
         self.model.v = 1.
         self.model.vref = 1.
-        state1 = rsf.DieterichState(self.model)
+        state1 = rsf.DieterichState()
         state1.b = 0.01
         state1.Dc = 10.
         self.model.state_relations = [state1]
@@ -111,7 +111,7 @@ class TestRuinaOneStateVar(object):
         self.model.k = 1e-3
         self.model.v = 1.
         self.model.vref = 1.
-        state1 = rsf.RuinaState(self.model)
+        state1 = rsf.RuinaState()
         state1.b = 0.005
         state1.Dc = 10.
         self.model.state_relations = [state1]
@@ -210,7 +210,7 @@ class TestPerrinOneStateVar(object):
         self.model.k = 1e-3
         self.model.v = 1.
         self.model.vref = 1.
-        state1 = rsf.PrzState(self.model)
+        state1 = rsf.PrzState()
         state1.b = 0.005
         state1.Dc = 10.
         self.model.state_relations = [state1]
@@ -309,11 +309,11 @@ class TestDeiterichTwoStateVar(object):
         self.model.k = 3e-3
         self.model.v = 1.
         self.model.vref = 1.
-        state1 = rsf.DieterichState(self.model)
+        state1 = rsf.DieterichState()
         state1.b = 0.0185
         state1.Dc = 5.
 
-        state2 = rsf.DieterichState(self.model)
+        state2 = rsf.DieterichState()
         state2.b = 0.0088
         state2.Dc = 50.
         self.model.state_relations = [state1, state2]
@@ -428,11 +428,11 @@ class TestRuinaTwoStateVar(object):
         self.model.k = 8e-3
         self.model.v = 1.
         self.model.vref = 1.
-        state1 = rsf.RuinaState(self.model)
+        state1 = rsf.RuinaState()
         state1.b = 0.0185
         state1.Dc = 5.
 
-        state2 = rsf.RuinaState(self.model)
+        state2 = rsf.RuinaState()
         state2.b = 0.0088
         state2.Dc = 50.
         self.model.state_relations = [state1, state2]

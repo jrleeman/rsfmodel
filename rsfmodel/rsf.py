@@ -13,7 +13,7 @@ class StateRelation(object):
     Abstract state relation object that contains the generally used atributes
     in state relations (b,Dc).
     """
-    def __init__(self, relation):
+    def __init__(self):
         self.b = None
         self.Dc = None
         self.state = None
@@ -98,6 +98,7 @@ class NagataState(StateRelation):
     \frac{d\theta}{dt} =  1 - \frac{V_\text{slider} \theta}{D_c} - \frac{c}{b}\theta\frac{d\mu}{dt}
     """
     def __init__(self):
+        StateRelation.__init__(self)
         self.c = None
 
     def _set_steady_state(self, system):
