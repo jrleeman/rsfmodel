@@ -5,6 +5,8 @@ from scipy import integrate
 from math import exp, log
 from collections import namedtuple
 
+class IncompleteModelError(Exception):
+    pass
 
 class StateRelation(object):
     """
@@ -113,7 +115,7 @@ class LoadingSystem(object):
     def __init__(self):
         self.k = None
         self.time = None  # List of times we want answers at
-        self.loadpoint_velocity = []  # Matching list of velocities
+        self.loadpoint_velocity = None  # Matching list of velocities
 
     def velocity_evolution(self):
         v_contribution = 0
@@ -128,6 +130,7 @@ class LoadingSystem(object):
 class Model(LoadingSystem):
     """ Houses the model coefficients and does the integration """
     def __init__(self):
+        LoadingSystem.__init__(self)
         self.mu0 = 0.6
         self.a = None
         self.vref = None
@@ -160,28 +163,26 @@ class Model(LoadingSystem):
 
     def readyCheck(self):
         if self.a == None:
-            return False
+            raise IncompleteModelError('Parameter a is None')
         elif self.vref == None:
-            return False
+            raise IncompleteModelError('Parameter vref is None')
         elif self.state_relations == []:
-            return False
+            raise IncompleteModelError('No state relations in state_relations')
         elif self.k == None:
-            return False
-        elif self.time == None:
-            return False
-        elif self.loadpoint_velocity == []:
-            return False
+            raise IncompleteModelError('Parameter k is None')
+        elif self.time.any() == None:
+            raise IncompleteModelError('Parameter time is None')
+        elif self.loadpoint_velocity.any() == None:
+            raise IncompleteModelError('Parameter loadpoint_velocity is not set')
 
         for state_relation in self.state_relations:
             if state_relation.b == None:
-                return False
+                raise IncompleteModelError('Parameter b is None')
             elif state_relation.Dc == None:
-                return False
+                raise IncompleteModelError('Parameter Dc is None')
 
         if len(self.time) != len(self.loadpoint_velocity):
-            return False
-
-        return True
+            raise IncompleteModelError('Time and loadpoint_velocity lengths do not match')
 
     def solve(self, **kwargs):
         """
@@ -192,8 +193,7 @@ class Model(LoadingSystem):
         odeint_kwargs.update(kwargs)
 
         # Make sure we have everything set before we try to run
-        if self.readyCheck() != True:
-            raise RuntimeError('Not all model parameters set')
+        self.readyCheck()
 
         # Initial conditions at t = 0
         w0 = [self.mu0]
