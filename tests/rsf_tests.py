@@ -26,8 +26,8 @@ class TestDeiterichOneStateVar(object):
 
     def test_phaseplot(self):
         rsf.phasePlot(self.model)
-        
-    @raises(Exception)
+
+    @raises(ValueError)
     def test_phaseplot3D(self):
         rsf.phasePlot3D(self.model)
 
@@ -809,12 +809,12 @@ class TestRuinaTwoStateVarMissing(object):
         self.model.loadpoint_velocity = lp_velocity
         self.model.solve()
 
-    @raises(Exception)
+    @raises(rsf.IncompleteModelError)
     def test_a_missing(self):
         self.model.a = None
         self.model.solve()
 
-    @raises(Exception)
+    @raises(rsf.IncompleteModelError)
     def test_vref_missing(self):
         self.model.vref = None
         self.model.solve()
@@ -824,22 +824,22 @@ class TestRuinaTwoStateVarMissing(object):
         self.model.state_relations = []
         self.model.solve()
 
-    @raises(Exception)
+    @raises(rsf.IncompleteModelError)
     def test_k_missing(self):
         self.model.k = None
         self.model.solve()
 
-    @raises(Exception)
+    @raises(rsf.IncompleteModelError)
     def test_time_missing(self):
         self.model.time = None
         self.model.solve()
 
-    @raises(Exception)
+    @raises(rsf.IncompleteModelError)
     def test_lp_velocity_missing(self):
         self.model.loadpoint_velocity = None
         self.model.solve()
 
-    @raises(Exception)
+    @raises(rsf.IncompleteModelError)
     def test_state1_b_missing(self):
         state1 = rsf.RuinaState()
         state1.Dc = 5.
@@ -850,7 +850,7 @@ class TestRuinaTwoStateVarMissing(object):
         self.model.state_relations = [state1, state2]
         self.model.solve()
 
-    @raises(Exception)
+    @raises(rsf.IncompleteModelError)
     def test_state2_b_missing(self):
         state1 = rsf.RuinaState()
         state1.b = 0.0185
@@ -861,7 +861,7 @@ class TestRuinaTwoStateVarMissing(object):
         self.model.state_relations = [state1, state2]
         self.model.solve()
 
-    @raises(Exception)
+    @raises(rsf.IncompleteModelError)
     def test_state1_Dc_missing(self):
         state1 = rsf.RuinaState()
         state1.b = 0.0185
@@ -872,7 +872,7 @@ class TestRuinaTwoStateVarMissing(object):
         self.model.state_relations = [state1, state2]
         self.model.solve()
 
-    @raises(Exception)
+    @raises(rsf.IncompleteModelError)
     def test_state2Dcb_missing(self):
         state1 = rsf.RuinaState()
         state1.b = 0.0185
@@ -883,7 +883,7 @@ class TestRuinaTwoStateVarMissing(object):
         self.model.state_relations = [state1, state2]
         self.model.solve()
 
-    @raises(Exception)
+    @raises(rsf.IncompleteModelError)
     def test_time_velocity_length_mismatch(self):
         self.model.time = np.arange(0,40.01,0.1)
         self.model.solve()
