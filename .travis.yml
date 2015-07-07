@@ -9,9 +9,9 @@ python:
 matrix:
   include:
     - python: 2.7
-      env: EXMAPLES=true
+      env: EXAMPLES=true
     - python: 3.4
-      env: EXMAPLES=true
+      env: EXAMPLES=true
 
 before_install:
   - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
