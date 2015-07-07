@@ -23,9 +23,11 @@ def stdoutIO(stdout=None):
 
 # Loop over all scripts, read them in and execute. If *any* exception is raised,
 # print it out and print 'FAILED'. If any example fails to run, exit non-zero.
-script_dir = os.path.join(os.path.dirname(__file__), 'scripts')
+script_dir = os.path.dirname(__file__)
 failed_test = False
 for fname in glob.glob(os.path.join(script_dir, '*.py')):
+    if fname == os.path.basename(__file__):
+        continue
     with open(fname) as pysource:
         print(fname, '....', sep='', end=' ')
         try:
