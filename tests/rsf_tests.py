@@ -1,6 +1,9 @@
 from nose.tools import *
+import matplotlib
+matplotlib.use('agg')
 from rsfmodel import rsf
 import numpy as np
+
 
 class TestDeiterichOneStateVar(object):
 
@@ -756,3 +759,56 @@ class TestPRZTwoStateVar(object):
            310.])
 
         np.testing.assert_almost_equal(self.model.results.loadpoint_displacement, truth, 8)
+
+class TestRuinaTwoStateVar(object):
+
+    def setup(self):
+        self.model = rsf.Model()
+        self.model.mu0 = 0.6
+        self.model.a = 0.012
+        self.model.k = 8e-3
+        self.model.v = 1.
+        self.model.vref = 1.
+        state1 = rsf.RuinaState()
+        state1.b = 0.0185
+        state1.Dc = 5.
+
+        state2 = rsf.RuinaState()
+        state2.b = 0.0088
+        state2.Dc = 50.
+        self.model.state_relations = [state1, state2]
+        self.model.time = np.arange(0,40.01,1.)
+        lp_velocity = np.ones_like(self.model.time)
+        lp_velocity[10*1:] = 10.
+        self.model.loadpoint_velocity = lp_velocity
+        self.model.solve()
+
+    @raises(Exception)
+    def test_a_missing(self):
+        self.model.a = None
+        self.model.solve()
+
+    @raises(Exception)
+    def test_vref_missing(self):
+        self.model.vref = None
+        self.model.solve()
+
+    @raises(Exception)
+    def test_state_realtions_missing(self):
+        self.model.state_relations = []
+        self.model.solve()
+
+    @raises(Exception)
+    def test_k_missing(self):
+        self.model.k = None
+        self.model.solve()
+
+    @raises(Exception)
+    def test_time_missing(self):
+        self.model.time = None
+        self.model.solve()
+
+    @raises(Exception)
+    def test_velocity_missing(self):
+        self.model.loadpoint_velocity = None
+        self.model.solve()
