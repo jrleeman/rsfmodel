@@ -24,6 +24,15 @@ class TestDeiterichOneStateVar(object):
         self.model.loadpoint_velocity = lp_velocity
         self.model.solve()
 
+    def test_phaseplot(self):
+        rsf.phasePlot(self.model)
+
+    def test_dispplot(self):
+        rsf.dispPlot(self.model)
+
+    def test_timeplot(self):
+        rsf.timePlot(self.model)
+
     def test_friction(self):
         truth = np.array(
           [0.6, 0.6, 0.6, 0.6,
@@ -760,7 +769,8 @@ class TestPRZTwoStateVar(object):
 
         np.testing.assert_almost_equal(self.model.results.loadpoint_displacement, truth, 8)
 
-class TestRuinaTwoStateVar(object):
+
+class TestRuinaTwoStateVarMissing(object):
 
     def setup(self):
         self.model = rsf.Model()
