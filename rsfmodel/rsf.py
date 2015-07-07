@@ -36,13 +36,10 @@ class DieterichState(StateRelation):
     .. math::
     \frac{d\theta}{dt} = 1 - \frac{V_\text{slider} \theta}{D_c}
     """
-    def _set_steady_state(self, system):
+    def set_steady_state(self, system):
         self.state = self.Dc/system.vref
 
     def evolve_state(self, system):
-        if self.state is None:
-            self.state = _set_steady_state(self, system)
-
         return 1. - system.v * self.state / self.Dc
 
 
@@ -53,13 +50,10 @@ class RuinaState(StateRelation):
     .. math::
     \frac{d\theta}{dt} =  -\frac{V_\text{slider} \theta}{D_c} \text{ln}\left(\frac{V_\text{slider} \theta}{D_c}\right)
     """
-    def _set_steady_state(self, system):
+    def set_steady_state(self, system):
         self.state = self.Dc/system.vref
 
     def evolve_state(self, system):
-        if self.state is None:
-            self.state = _set_steady_state(self, system)
-
         return -1 * (system.v * self.state / self.Dc) * log(system.v * self.state / self.Dc)
 
 
@@ -70,14 +64,11 @@ class PrzState(StateRelation):
     .. math::
     \frac{d\theta}{dt} =  1 - \left(\frac{V_\text{slider} \theta}{2D_c}\right) ^2
     """
-    def _set_steady_state(self, system):
+    def set_steady_state(self, system):
         self.state = 2 * self.Dc / system.v
         self.prz_vref = system.vref/(2*self.Dc)
 
     def evolve_state(self, system):
-        if self.state is None:
-            self.state = _set_steady_state(self, system)
-        # return dtheta/dt
         return 1. - (system.v * self.state / (2 * self.Dc))**2
 
     def velocity_component(self, system):
@@ -101,13 +92,10 @@ class NagataState(StateRelation):
         StateRelation.__init__(self)
         self.c = None
 
-    def _set_steady_state(self, system):
+    def set_steady_state(self, system):
         self.state = self.Dc / system.vref
 
     def evolve_state(self, system):
-        if self.state is None:
-            self.state = _steady_state(self, system)
-        # return dtheta/dt
         return 1. - (system.v * self.state / self.Dc) - (self.c / self.b * self.state * system.dmu_dt)
 
 
@@ -199,7 +187,7 @@ class Model(LoadingSystem):
         # Initial conditions at t = 0
         w0 = [self.mu0]
         for state_variable in self.state_relations:
-            state_variable._set_steady_state(self)
+            state_variable.set_steady_state(self)
             w0.append(state_variable.state)
 
         # Solve it
