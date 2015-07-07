@@ -159,9 +159,9 @@ class Model(LoadingSystem):
             raise IncompleteModelError('No state relations in state_relations')
         elif self.k == None:
             raise IncompleteModelError('Parameter k is None')
-        elif self.time.any() == None:
+        elif self.time == None:
             raise IncompleteModelError('Parameter time is None')
-        elif self.loadpoint_velocity.any() == None:
+        elif self.loadpoint_velocity == None:
             raise IncompleteModelError('Parameter loadpoint_velocity is not set')
 
         for state_relation in self.state_relations:

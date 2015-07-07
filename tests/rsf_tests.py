@@ -856,3 +856,8 @@ class TestRuinaTwoStateVar(object):
         state2.b = 0.0088
         self.model.state_relations = [state1, state2]
         self.model.solve()
+
+    @raises(Exception)
+    def test_time_velocity_length_mismatch(self):
+        self.model.time = np.arange(0,40.01,0.1)
+        self.model.solve()
