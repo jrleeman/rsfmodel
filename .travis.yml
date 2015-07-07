@@ -4,7 +4,6 @@ python:
   - "2.7"
   - "3.2"
   - "3.3"
-  - "3.4"
 
 matrix:
   include:
@@ -12,6 +11,8 @@ matrix:
       env: EXAMPLES=true
     - python: 3.4
       env: EXAMPLES=true
+    - python: 3.4
+        env: NOSE_WITH_COVERAGE=y NOSE_COVER_PACKAGE=rsfmodel
 
 before_install:
   - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
@@ -24,6 +25,9 @@ before_install:
     fi;
   - conda create -n Travis --yes python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib nose
   - source activate Travis
+  - if [[ $NOSE_WITH_COVERAGE == y ]]; then
+      conda install --yes coverage;
+    fi;
 
 install:
   - python setup.py install
@@ -36,3 +40,9 @@ script:
       else
         nosetests;
       fi
+
+after_success:
+  - if [[ $NOSE_WITH_COVERAGE == y ]]; then
+      pip install coveralls;
+      coveralls;
+    fi;
