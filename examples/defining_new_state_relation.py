@@ -10,13 +10,10 @@ from rsfmodel import rsf
 
 class MyStateRelation(rsf.StateRelation):
     # Need to provide a steady state calcualtion method
-    def _set_steady_state(self, system):
+    def set_steady_state(self, system):
         self.state = self.Dc/system.vref
 
     def evolve_state(self, system):
-        if self.state is None:
-            self.state = _set_steady_state(self, system)
-
         return -1 * (system.v * self.state / self.Dc) * log(system.v * self.state / self.Dc)
 
 model = rsf.Model()
