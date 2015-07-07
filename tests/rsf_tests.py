@@ -26,6 +26,10 @@ class TestDeiterichOneStateVar(object):
 
     def test_phaseplot(self):
         rsf.phasePlot(self.model)
+        
+    @raises(Exception)
+    def test_phaseplot3D(self):
+        rsf.phasePlot3D(self.model)
 
     def test_dispplot(self):
         rsf.dispPlot(self.model)
@@ -334,6 +338,18 @@ class TestDeiterichTwoStateVar(object):
         lp_velocity[10*1:] = 10.
         self.model.loadpoint_velocity = lp_velocity
         self.model.solve()
+
+    def test_phaseplot(self):
+        rsf.phasePlot(self.model)
+
+    def test_phaseplot3D(self):
+        rsf.phasePlot3D(self.model)
+
+    def test_dispplot(self):
+        rsf.dispPlot(self.model)
+
+    def test_timeplot(self):
+        rsf.timePlot(self.model)
 
     def test_friction(self):
         truth = np.array(
