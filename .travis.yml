@@ -13,7 +13,7 @@ before_install:
   - export PATH=/home/travis/miniconda/bin:$PATH
   - conda update --yes conda
   - if [[ $TRAVIS_PYTHON_VERSION == "3.2" ]]; then
-      conda config --add channels https://conda.binstar.org/pandas;
+      conda config --add channels https://conda.binstar.org/astropy-ci-extras;
     fi;
   - conda create -n Travis --yes python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib nose
   - source activate Travis
