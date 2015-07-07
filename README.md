@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/jrleeman/rsfmodel.svg?branch=master)](https://travis-ci.org/jrleeman/rsfmodel)
+
 # Rate and State Friction Toolkit
 
 This Python module enables modeling of frictional response to dynamic events
@@ -9,7 +11,7 @@ A summary article by Chris Marone (1998) provides a solid background.
 ### Examples of use
 
 Examples of simple single state variable and more complex multiple state-variable
-cases are included in the examples directory. 
+cases are included in the examples directory.
 
 ### Useful References
 - Dieterich, J. H. (1979). Modeling of rock friction: 1. Experimental results and constitutive equations. Journal of Geophysical Research: Solid Earth (1978--2012), 84(B5), 2161–2168.
