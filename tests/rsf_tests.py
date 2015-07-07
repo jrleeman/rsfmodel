@@ -809,6 +809,50 @@ class TestRuinaTwoStateVar(object):
         self.model.solve()
 
     @raises(Exception)
-    def test_velocity_missing(self):
+    def test_lp_velocity_missing(self):
         self.model.loadpoint_velocity = None
+        self.model.solve()
+
+    @raises(Exception)
+    def test_state1_b_missing(self):
+        state1 = rsf.RuinaState()
+        state1.Dc = 5.
+
+        state2 = rsf.RuinaState()
+        state2.b = 0.0088
+        state2.Dc = 50.
+        self.model.state_relations = [state1, state2]
+        self.model.solve()
+
+    @raises(Exception)
+    def test_state2_b_missing(self):
+        state1 = rsf.RuinaState()
+        state1.b = 0.0185
+        state1.Dc = 5.
+
+        state2 = rsf.RuinaState()
+        state2.Dc = 50.
+        self.model.state_relations = [state1, state2]
+        self.model.solve()
+
+    @raises(Exception)
+    def test_state1_Dc_missing(self):
+        state1 = rsf.RuinaState()
+        state1.b = 0.0185
+
+        state2 = rsf.RuinaState()
+        state2.b = 0.0088
+        state2.Dc = 50.
+        self.model.state_relations = [state1, state2]
+        self.model.solve()
+
+    @raises(Exception)
+    def test_state2Dcb_missing(self):
+        state1 = rsf.RuinaState()
+        state1.b = 0.0185
+        state1.Dc = 5.
+
+        state2 = rsf.RuinaState()
+        state2.b = 0.0088
+        self.model.state_relations = [state1, state2]
         self.model.solve()
