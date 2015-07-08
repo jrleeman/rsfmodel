@@ -151,23 +151,23 @@ class Model(LoadingSystem):
         return step_results
 
     def readyCheck(self):
-        if self.a == None:
+        if self.a is None:
             raise IncompleteModelError('Parameter a is None')
-        elif self.vref == None:
+        elif self.vref is None:
             raise IncompleteModelError('Parameter vref is None')
         elif self.state_relations == []:
             raise IncompleteModelError('No state relations in state_relations')
-        elif self.k == None:
+        elif self.k is None:
             raise IncompleteModelError('Parameter k is None')
-        elif self.time.any() == None:
+        elif self.time is None:
             raise IncompleteModelError('Parameter time is None')
-        elif self.loadpoint_velocity.any() == None:
+        elif self.loadpoint_velocity is None:
             raise IncompleteModelError('Parameter loadpoint_velocity is not set')
 
         for state_relation in self.state_relations:
-            if state_relation.b == None:
+            if state_relation.b is None:
                 raise IncompleteModelError('Parameter b is None')
-            elif state_relation.Dc == None:
+            elif state_relation.Dc is None:
                 raise IncompleteModelError('Parameter Dc is None')
 
         if len(self.time) != len(self.loadpoint_velocity):
