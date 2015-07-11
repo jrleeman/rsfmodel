@@ -155,9 +155,13 @@ class Model(LoadingSystem):
 
         mu,theta = w
 
+        loadpoint_vel = system.loadpoint_velocity[system.time <= t][-1]
+
         v_contribution = self.state_relations[0].b*np.log(self.vref*theta/self.state_relations[0].Dc)
 
         V = self.vref * np.exp((mu - self.mu0 - v_contribution) / self.a)
+
+        dmu_dt = self.k * (loadpoint_vel - V)
 
         dV_dtheta = -self.state_relations[0].b * V /(self.a * theta)
 
@@ -167,12 +171,12 @@ class Model(LoadingSystem):
 
         dmu_dmu_dt = -self.k * dV_dmu
 
-        Vs =  self.vref * np.exp((mu - self.mu0 - v_contribution) / self.a)
+        dtheta_dtheta_dt = (-V/self.state_relations[0].Dc) - (theta/self.state_relations[0].Dc) * dV_dtheta - self.state_relations[0].c / self.state_relations[0].b * dmu_dt - self.state_relations[0].c / self.state_relations[0].b * theta * dtheta_dmu_dt
 
-        dtheta_dtheta_dt = (-V/self.state_relations[0].Dc) - (theta/self.state_relations[0].Dc) * dV_dtheta
+        dmu_dtheta_dt = -theta * dV_dmu / self.state_relations[0].Dc - self.state_relations[0].c / self.state_relations[0].b * theta * dmu_dmu_dt
 
-        dmu_dtheta_dt = -theta * V / (self.state_relations[0].Dc * self.a)
-
+        print theta, mu, dV_dmu, self.state_relations[0].Dc, self.state_relations[0].c, self.state_relations[0].b, self.a, loadpoint_vel
+        print np.array([[dmu_dmu_dt, dtheta_dmu_dt],[dmu_dtheta_dt,dtheta_dtheta_dt]])
 
         return np.array([[dmu_dmu_dt, dtheta_dmu_dt],[dmu_dtheta_dt,dtheta_dtheta_dt]])
 
@@ -217,7 +221,7 @@ class Model(LoadingSystem):
             w0.append(state_variable.state)
 
         # Solve it
-        wsol,self.info = integrate.odeint(self._integrationStep, w0, self.time,full_output=True,# Dfun=self._derivativeStep,
+        wsol,self.info = integrate.odeint(self._integrationStep, w0, self.time,full_output=True, Dfun=self._derivativeStep,
                                 args=(self,), **odeint_kwargs)
 
         self.results.friction = wsol[:, 0]
