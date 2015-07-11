@@ -31,10 +31,10 @@ model.loadpoint_velocity = lp_velocity
 model.solve()
 
 # Make the phase plot
-rsf.phasePlot(model)
-
-# Make a plot in displacement
-rsf.dispPlot(model)
-
-# Make a plot in time
-rsf.timePlot(model)
+# rsf.phasePlot(model)
+#
+# # Make a plot in displacement
+# rsf.dispPlot(model)
+#
+# # Make a plot in time
+# rsf.timePlot(model)

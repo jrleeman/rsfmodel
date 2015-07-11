@@ -150,6 +150,32 @@ class Model(LoadingSystem):
 
         return step_results
 
+    def _derivativeStep(self, w, t, system):
+        """ Calculate and return system derivatives"""
+
+        mu,theta = w
+
+        v_contribution = self.state_relations[0].b*np.log(self.vref*theta/self.state_relations[0].Dc)
+
+        V = self.vref * np.exp((mu - self.mu0 - v_contribution) / self.a)
+
+        dV_dtheta = -self.state_relations[0].b * V /(self.a * theta)
+
+        dV_dmu = V / self.a
+
+        dtheta_dmu_dt = -self.k * dV_dtheta
+
+        dmu_dmu_dt = -self.k * dV_dmu
+
+        Vs =  self.vref * np.exp((mu - self.mu0 - v_contribution) / self.a)
+
+        dtheta_dtheta_dt = (-V/self.state_relations[0].Dc) - (theta/self.state_relations[0].Dc) * dV_dtheta
+
+        dmu_dtheta_dt = -theta * V / (self.state_relations[0].Dc * self.a)
+
+
+        return np.array([[dmu_dmu_dt, dtheta_dmu_dt],[dmu_dtheta_dt,dtheta_dtheta_dt]])
+
     def readyCheck(self):
         if self.a is None:
             raise IncompleteModelError('Parameter a is None')
@@ -191,8 +217,9 @@ class Model(LoadingSystem):
             w0.append(state_variable.state)
 
         # Solve it
-        wsol = integrate.odeint(self._integrationStep, w0, self.time,
+        wsol,self.info = integrate.odeint(self._integrationStep, w0, self.time,full_output=True,# Dfun=self._derivativeStep,
                                 args=(self,), **odeint_kwargs)
+
         self.results.friction = wsol[:, 0]
         self.results.states = wsol[:, 1:]
         self.results.time = self.time
