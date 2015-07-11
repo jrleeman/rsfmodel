@@ -173,7 +173,18 @@ class Model(LoadingSystem):
         if len(self.time) != len(self.loadpoint_velocity):
             raise IncompleteModelError('Time and loadpoint_velocity lengths do not match')
 
-    def solve(self, **kwargs):
+    def _get_critical_times(self, threshold):
+        """
+        Calculates accelearation and thresholds based on that to find areas that are likely problematic
+        to integrate.
+        """
+        velocity_gradient = np.gradient(self.loadpoint_velocity)
+        time_gradient = np.gradient(self.time)
+        acceleration = velocity_gradient / time_gradient
+        critical_times = self.time[np.abs(acceleration) > threshold]
+        return critical_times
+
+    def solve(self, threshold=0, **kwargs):
         """
         Runs the integrator to actually solve the model and returns a
         named tuple of results.
@@ -190,9 +201,13 @@ class Model(LoadingSystem):
             state_variable.set_steady_state(self)
             w0.append(state_variable.state)
 
+        # Find any critial time points we need to let the integrator know about
+        self.critical_times = self._get_critical_times(threshold)
+
         # Solve it
-        wsol = integrate.odeint(self._integrationStep, w0, self.time,
+        wsol, self.solver_info = integrate.odeint(self._integrationStep, w0, self.time, full_output=True, tcrit=self.critical_times,
                                 args=(self,), **odeint_kwargs)
+        
         self.results.friction = wsol[:, 0]
         self.results.states = wsol[:, 1:]
         self.results.time = self.time
