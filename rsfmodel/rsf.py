@@ -184,7 +184,7 @@ class Model(LoadingSystem):
         critical_times = self.time[np.abs(acceleration) > threshold]
         return critical_times
 
-    def solve(self, threshold=0, **kwargs):
+    def solve(self, threshold=2, **kwargs):
         """
         Runs the integrator to actually solve the model and returns a
         named tuple of results.
@@ -207,7 +207,7 @@ class Model(LoadingSystem):
         # Solve it
         wsol, self.solver_info = integrate.odeint(self._integrationStep, w0, self.time, full_output=True, tcrit=self.critical_times,
                                 args=(self,), **odeint_kwargs)
-        
+
         self.results.friction = wsol[:, 0]
         self.results.states = wsol[:, 1:]
         self.results.time = self.time
