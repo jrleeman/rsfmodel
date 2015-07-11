@@ -81,6 +81,24 @@ class PrzState(StateRelation):
         return self.b * np.log(self.prz_vref * self.state)
 
 
+class NagataState(StateRelation):
+    """
+    The Nagata state relation as proposed by Nagata et al. (2012):
+
+    .. math::
+    \frac{d\theta}{dt} =  1 - \frac{V_\text{slider} \theta}{D_c} - \frac{c}{b}\theta\frac{d\mu}{dt}
+    """
+    def __init__(self):
+        StateRelation.__init__(self)
+        self.c = None
+
+    def set_steady_state(self, system):
+        self.state = self.Dc / system.vref
+
+    def evolve_state(self, system):
+        return 1. - (system.v * self.state / self.Dc) - (self.c / self.b * self.state * system.dmu_dt)
+
+
 class LoadingSystem(object):
     """ Contains attributes relating to the external loading system """
     def __init__(self):
