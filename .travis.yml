@@ -14,6 +14,12 @@ matrix:
     - python: 3.4
       env: NOSE_WITH_COVERAGE=y NOSE_COVER_PACKAGE=rsfmodel
 
+addons:
+  apt:
+    packages:
+    - libblas3gf
+    - liblapack3gf
+
 before_install:
   - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
   - chmod +x miniconda.sh
