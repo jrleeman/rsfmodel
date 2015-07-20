@@ -36,7 +36,6 @@ before_install:
   - if [[ $NOSE_WITH_COVERAGE == y ]]; then
       conda install --yes coverage;
     fi;
-  - dpkg-query -l
 
 install:
   - python setup.py install
