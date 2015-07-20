@@ -205,7 +205,7 @@ class Model(LoadingSystem):
         self.critical_times = self._get_critical_times(threshold)
 
         # Solve it
-        wsol, self.solver_info = integrate.odeint(self._integrationStep, w0, self.time, full_output=True, tcrit=self.critical_times,
+        wsol, self.solver_info = integrate.odeint(self._integrationStep, w0, self.time, full_output=True, #tcrit=self.critical_times,
                                 args=(self,), **odeint_kwargs)
 
         self.results.friction = wsol[:, 0]
