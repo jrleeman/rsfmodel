@@ -189,7 +189,7 @@ class Model(LoadingSystem):
         Runs the integrator to actually solve the model and returns a
         named tuple of results.
         """
-        odeint_kwargs = dict(rtol=1e-12, atol=1e-12)
+        odeint_kwargs = dict(rtol=1e-12, atol=1e-12, mxstep=5000)
         odeint_kwargs.update(kwargs)
 
         # Make sure we have everything set before we try to run
@@ -205,8 +205,8 @@ class Model(LoadingSystem):
         self.critical_times = self._get_critical_times(threshold)
 
         # Solve it
-        wsol, self.solver_info = integrate.odeint(self._integrationStep, w0, self.time, full_output=True, mxstep=5000, tcrit=self.critical_times,
-                                args=(self,), **odeint_kwargs)
+        wsol, self.solver_info = integrate.odeint(self._integrationStep, w0, self.time, full_output=True,
+                                                  tcrit=self.critical_times, args=(self,), **odeint_kwargs)
 
         self.results.friction = wsol[:, 0]
         self.results.states = wsol[:, 1:]
