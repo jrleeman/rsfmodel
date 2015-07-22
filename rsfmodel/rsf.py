@@ -5,8 +5,13 @@ from scipy import integrate
 from math import exp, log
 from collections import namedtuple
 
+
 class IncompleteModelError(Exception):
+    """
+    Special error case for trying to run the model with inadequate information.
+    """
     pass
+
 
 class StateRelation(object):
     """
@@ -223,14 +228,17 @@ class Model(LoadingSystem):
                                         velocity_contribution) / self.a)
 
         # Calculate displacement from velocity and dt
-        self.results.loadpoint_displacement = self._calculateDisplacement(self.loadpoint_velocity)
+        self.results.loadpoint_displacement = self._calculateDiscreteDisplacement(self.loadpoint_velocity)
 
         # Calculate the slider displacement
-        self.results.slider_displacement = self._calculateDisplacement(self.results.slider_velocity)
+        self.results.slider_displacement = self._calculateContinuousDisplacement(self.results.slider_velocity)
 
         return self.results
 
-    def _calculateDisplacement(self, velocity):
+    def _calculateContinuousDisplacement(self, velocity):
+        return integrate.cumtrapz(velocity, self.time, initial=0)
+
+    def _calculateDiscreteDisplacement(self, velocity):
         dt = np.ediff1d(self.results.time)
         displacement = np.cumsum(velocity[:-1] * dt)
         displacement = np.insert(displacement, 0, 0)
@@ -272,6 +280,7 @@ def phasePlot(system, fig=None, ax1=None):
     plt.show()
     return fig, ax1
 
+
 def phasePlot3D(system, fig=None, ax1=None, state_variable=2):
     """ Make a 3D phase plot of the current model. """
 
@@ -285,16 +294,17 @@ def phasePlot3D(system, fig=None, ax1=None, state_variable=2):
         ax1 = fig.gca(projection='3d')
 
     v_ratio = np.log(system.results.slider_velocity/system.vref)
-    ax1.plot(v_ratio, system.results.states[:,state_variable-1], system.results.friction, color='k', linewidth=2)
+    ax1.plot(v_ratio, system.results.states[:, state_variable-1], system.results.friction, color='k', linewidth=2)
 
     ax1.set_xlabel(r'ln$\frac{V}{V_{ref}}$', fontsize=16)
-    ax1.set_ylabel(r'$\theta_%d$' %state_variable, fontsize=16)
+    ax1.set_ylabel(r'$\theta_%d$' % state_variable, fontsize=16)
     ax1.set_zlabel(r'$\mu$', fontsize=16)
     ax1.xaxis._axinfo['label']['space_factor'] = 2.5
     ax1.yaxis._axinfo['label']['space_factor'] = 2.
     ax1.zaxis._axinfo['label']['space_factor'] = 2.
     plt.show()
     return fig, ax1
+
 
 def dispPlot(system):
     """ Make a standard plot with displacement as the x variable """
