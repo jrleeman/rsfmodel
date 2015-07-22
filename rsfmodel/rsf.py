@@ -53,7 +53,8 @@ class RuinaState(StateRelation):
     The slip or Ruina state relation as proposed by Andy Ruina (1983)
 
     .. math::
-    \frac{d\theta}{dt} =  -\frac{V_\text{slider} \theta}{D_c} \text{ln}\left(\frac{V_\text{slider} \theta}{D_c}\right)
+    \frac{d\theta}{dt} =  -\frac{V_\text{slider} \theta}{D_c}
+    \text{ln}\left(\frac{V_\text{slider} \theta}{D_c}\right)
     """
     def set_steady_state(self, system):
         self.state = self.Dc/system.vref
@@ -91,7 +92,8 @@ class NagataState(StateRelation):
     The Nagata state relation as proposed by Nagata et al. (2012):
 
     .. math::
-    \frac{d\theta}{dt} =  1 - \frac{V_\text{slider} \theta}{D_c} - \frac{c}{b}\theta\frac{d\mu}{dt}
+    \frac{d\theta}{dt} =  1 - \frac{V_\text{slider} \theta}{D_c}
+    - \frac{c}{b}\theta\frac{d\mu}{dt}
     """
     def __init__(self):
         StateRelation.__init__(self)
@@ -101,7 +103,8 @@ class NagataState(StateRelation):
         self.state = self.Dc / system.vref
 
     def evolve_state(self, system):
-        return 1. - (system.v * self.state / self.Dc) - (self.c / self.b * self.state * system.dmu_dt)
+        return 1. - (system.v * self.state / self.Dc) - \
+               (self.c / self.b * self.state * system.dmu_dt)
 
 
 class LoadingSystem(object):
@@ -180,8 +183,8 @@ class Model(LoadingSystem):
 
     def _get_critical_times(self, threshold):
         """
-        Calculates accelearation and thresholds based on that to find areas that are likely problematic
-        to integrate.
+        Calculates accelearation and thresholds based on that to find areas
+        that are likely problematic to integrate.
         """
         velocity_gradient = np.gradient(self.loadpoint_velocity)
         time_gradient = np.gradient(self.time)
@@ -210,8 +213,9 @@ class Model(LoadingSystem):
         self.critical_times = self._get_critical_times(threshold)
 
         # Solve it
-        wsol, self.solver_info = integrate.odeint(self._integrationStep, w0, self.time, full_output=True,
-                                                  tcrit=self.critical_times, args=(self,), **odeint_kwargs)
+        wsol, self.solver_info = integrate.odeint(self._integrationStep, w0, self.time,
+                                                  full_output=True, tcrit=self.critical_times,
+                                                  args=(self,), **odeint_kwargs)
 
         self.results.friction = wsol[:, 0]
         self.results.states = wsol[:, 1:]
@@ -228,10 +232,12 @@ class Model(LoadingSystem):
                                         velocity_contribution) / self.a)
 
         # Calculate displacement from velocity and dt
-        self.results.loadpoint_displacement = self._calculateDiscreteDisplacement(self.loadpoint_velocity)
+        self.results.loadpoint_displacement = \
+            self._calculateDiscreteDisplacement(self.loadpoint_velocity)
 
         # Calculate the slider displacement
-        self.results.slider_displacement = self._calculateContinuousDisplacement(self.results.slider_velocity)
+        self.results.slider_displacement = \
+            self._calculateContinuousDisplacement(self.results.slider_velocity)
 
         return self.results
 
@@ -294,7 +300,8 @@ def phasePlot3D(system, fig=None, ax1=None, state_variable=2):
         ax1 = fig.gca(projection='3d')
 
     v_ratio = np.log(system.results.slider_velocity/system.vref)
-    ax1.plot(v_ratio, system.results.states[:, state_variable-1], system.results.friction, color='k', linewidth=2)
+    ax1.plot(v_ratio, system.results.states[:, state_variable-1],
+             system.results.friction, color='k', linewidth=2)
 
     ax1.set_xlabel(r'ln$\frac{V}{V_{ref}}$', fontsize=16)
     ax1.set_ylabel(r'$\theta_%d$' % state_variable, fontsize=16)
