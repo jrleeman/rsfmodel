@@ -4,9 +4,15 @@ from mpl_toolkits.mplot3d import Axes3D
 from scipy import integrate
 from math import exp, log
 from collections import namedtuple
+import warnings
+
 
 class IncompleteModelError(Exception):
+    """
+    Special error case for trying to run the model with inadequate information.
+    """
     pass
+
 
 class StateRelation(object):
     """
@@ -48,7 +54,8 @@ class RuinaState(StateRelation):
     The slip or Ruina state relation as proposed by Andy Ruina (1983)
 
     .. math::
-    \frac{d\theta}{dt} =  -\frac{V_\text{slider} \theta}{D_c} \text{ln}\left(\frac{V_\text{slider} \theta}{D_c}\right)
+    \frac{d\theta}{dt} =  -\frac{V_\text{slider} \theta}{D_c}
+    \text{ln}\left(\frac{V_\text{slider} \theta}{D_c}\right)
     """
     def set_steady_state(self, system):
         self.state = self.Dc/system.vref
@@ -86,7 +93,8 @@ class NagataState(StateRelation):
     The Nagata state relation as proposed by Nagata et al. (2012):
 
     .. math::
-    \frac{d\theta}{dt} =  1 - \frac{V_\text{slider} \theta}{D_c} - \frac{c}{b}\theta\frac{d\mu}{dt}
+    \frac{d\theta}{dt} =  1 - \frac{V_\text{slider} \theta}{D_c}
+    - \frac{c}{b}\theta\frac{d\mu}{dt}
     """
     def __init__(self):
         StateRelation.__init__(self)
@@ -96,7 +104,8 @@ class NagataState(StateRelation):
         self.state = self.Dc / system.vref
 
     def evolve_state(self, system):
-        return 1. - (system.v * self.state / self.Dc) - (self.c / self.b * self.state * system.dmu_dt)
+        return 1. - (system.v * self.state / self.Dc) - \
+               (self.c / self.b * self.state * system.dmu_dt)
 
 
 class LoadingSystem(object):
@@ -175,8 +184,8 @@ class Model(LoadingSystem):
 
     def _get_critical_times(self, threshold):
         """
-        Calculates accelearation and thresholds based on that to find areas that are likely problematic
-        to integrate.
+        Calculates accelearation and thresholds based on that to find areas
+        that are likely problematic to integrate.
         """
         velocity_gradient = np.gradient(self.loadpoint_velocity)
         time_gradient = np.gradient(self.time)
@@ -205,8 +214,9 @@ class Model(LoadingSystem):
         self.critical_times = self._get_critical_times(threshold)
 
         # Solve it
-        wsol, self.solver_info = integrate.odeint(self._integrationStep, w0, self.time, full_output=True,
-                                                  tcrit=self.critical_times, args=(self,), **odeint_kwargs)
+        wsol, self.solver_info = integrate.odeint(self._integrationStep, w0, self.time,
+                                                  full_output=True, tcrit=self.critical_times,
+                                                  args=(self,), **odeint_kwargs)
 
         self.results.friction = wsol[:, 0]
         self.results.states = wsol[:, 1:]
@@ -223,14 +233,48 @@ class Model(LoadingSystem):
                                         velocity_contribution) / self.a)
 
         # Calculate displacement from velocity and dt
-        self.results.loadpoint_displacement = self._calculateDisplacement(self.loadpoint_velocity)
+        self.results.loadpoint_displacement = \
+            self._calculateDiscreteDisplacement(self.loadpoint_velocity)
 
         # Calculate the slider displacement
-        self.results.slider_displacement = self._calculateDisplacement(self.results.slider_velocity)
+        self.results.slider_displacement = \
+            self._calculateContinuousDisplacement(self.results.slider_velocity)
+
+        # Check slider displacement for accumulated error and warn
+        if not self._check_slider_displacement():
+            warnings.warn("Slider displacement differs from prediction by over "
+                          "1%. Smaller requested time resolution should be used "
+                          "If you intend to use the slider displacment output.")
 
         return self.results
 
-    def _calculateDisplacement(self, velocity):
+    def _check_slider_displacement(self, tol=0.01):
+        """
+        Checks that the slider displacement total is within a given tolerance
+        of the prediction from steady-state theory. Defaults to 1%
+        """
+        a_minus_b = self.a
+        for state_relation in self.state_relations:
+            a_minus_b -= state_relation.b
+
+        dmu = a_minus_b * np.log(self.results.slider_velocity[-1]/self.vref)
+        dx = -dmu/self.k
+
+        predicted_slider_displacement = self.results.loadpoint_displacement[-1] + dx
+        actual_slider_diaplacement = self.results.slider_displacement[-1]
+
+        difference = np.abs(predicted_slider_displacement - actual_slider_diaplacement)/\
+                     predicted_slider_displacement
+
+        if difference > tol:
+            return False
+        else:
+            return True
+
+    def _calculateContinuousDisplacement(self, velocity):
+        return integrate.cumtrapz(velocity, self.time, initial=0)
+
+    def _calculateDiscreteDisplacement(self, velocity):
         dt = np.ediff1d(self.results.time)
         displacement = np.cumsum(velocity[:-1] * dt)
         displacement = np.insert(displacement, 0, 0)
@@ -272,6 +316,7 @@ def phasePlot(system, fig=None, ax1=None):
     plt.show()
     return fig, ax1
 
+
 def phasePlot3D(system, fig=None, ax1=None, state_variable=2):
     """ Make a 3D phase plot of the current model. """
 
@@ -285,16 +330,18 @@ def phasePlot3D(system, fig=None, ax1=None, state_variable=2):
         ax1 = fig.gca(projection='3d')
 
     v_ratio = np.log(system.results.slider_velocity/system.vref)
-    ax1.plot(v_ratio, system.results.states[:,state_variable-1], system.results.friction, color='k', linewidth=2)
+    ax1.plot(v_ratio, system.results.states[:, state_variable-1],
+             system.results.friction, color='k', linewidth=2)
 
     ax1.set_xlabel(r'ln$\frac{V}{V_{ref}}$', fontsize=16)
-    ax1.set_ylabel(r'$\theta_%d$' %state_variable, fontsize=16)
+    ax1.set_ylabel(r'$\theta_%d$' % state_variable, fontsize=16)
     ax1.set_zlabel(r'$\mu$', fontsize=16)
     ax1.xaxis._axinfo['label']['space_factor'] = 2.5
     ax1.yaxis._axinfo['label']['space_factor'] = 2.
     ax1.zaxis._axinfo['label']['space_factor'] = 2.
     plt.show()
     return fig, ax1
+
 
 def dispPlot(system):
     """ Make a standard plot with displacement as the x variable """
