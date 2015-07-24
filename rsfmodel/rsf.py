@@ -4,6 +4,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from scipy import integrate
 from math import exp, log
 from collections import namedtuple
+import warnings
 
 
 class IncompleteModelError(Exception):
@@ -239,7 +240,36 @@ class Model(LoadingSystem):
         self.results.slider_displacement = \
             self._calculateContinuousDisplacement(self.results.slider_velocity)
 
+        # Check slider displacement for accumulated error and warn
+        if not self._check_slider_displacement():
+            warnings.warn("Slider displacement differs from prediction by over "
+                          "1%. Smaller requested time resolution should be used "
+                          "If you intend to use the slider displacment output.")
+
         return self.results
+
+    def _check_slider_displacement(self, tol=0.01):
+        """
+        Checks that the slider displacement total is within a given tolerance
+        of the prediction from steady-state theory. Defaults to 1%
+        """
+        a_minus_b = self.a
+        for state_relation in self.state_relations:
+            a_minus_b -= state_relation.b
+
+        dmu = a_minus_b * np.log(self.results.slider_velocity[-1]/self.vref)
+        dx = -dmu/self.k
+
+        predicted_slider_displacement = self.results.loadpoint_displacement[-1] + dx
+        actual_slider_diaplacement = self.results.slider_displacement[-1]
+
+        difference = np.abs(predicted_slider_displacement - actual_slider_diaplacement)/\
+                     predicted_slider_displacement
+
+        if difference > tol:
+            return False
+        else:
+            return True
 
     def _calculateContinuousDisplacement(self, velocity):
         return integrate.cumtrapz(velocity, self.time, initial=0)
