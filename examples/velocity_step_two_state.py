@@ -1,5 +1,5 @@
 import numpy as np
-from rsfmodel import rsf, staterelations, plotting
+from rsfmodel import rsf, staterelations, plot
 
 model = rsf.Model()
 
@@ -34,13 +34,13 @@ model.loadpoint_velocity = lp_velocity
 model.solve()
 
 # Make the 2D phase plot
-plotting.phasePlot(model)
+plot.phasePlot(model)
 
 # Make a 3D phase plot
-plotting.phasePlot3D(model)
+plot.phasePlot3D(model)
 
 # Make a plot in displacement
-plotting.dispPlot(model)
+plot.dispPlot(model)
 
 # Make a plot in time
-plotting.timePlot(model)
+plot.timePlot(model)

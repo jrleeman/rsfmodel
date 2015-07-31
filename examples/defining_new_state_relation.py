@@ -1,6 +1,6 @@
 import numpy as np
 from math import log
-from rsfmodel import rsf, plotting, staterelations
+from rsfmodel import rsf, plot, staterelations
 
 # This is really just the Ruina realtion, but let's pretend we invented it!
 # We'll inherit attributes from rsf.StateRelation, but you wouldn't have to.
@@ -44,10 +44,10 @@ model.loadpoint_velocity = lp_velocity
 model.solve()
 
 # Make the phase plot
-plotting.phasePlot(model)
+plot.phasePlot(model)
 
 # Make a plot in displacement
-plotting.dispPlot(model)
+plot.dispPlot(model)
 
 # Make a plot in time
-plotting.timePlot(model)
+plot.timePlot(model)

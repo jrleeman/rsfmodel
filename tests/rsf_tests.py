@@ -1,7 +1,7 @@
 from nose.tools import *
 import matplotlib
 matplotlib.use('agg')
-from rsfmodel import rsf, staterelations, plotting
+from rsfmodel import rsf, staterelations, plot
 from rsfmodel.rsf import IncompleteModelError
 import numpy as np
 
@@ -26,17 +26,17 @@ class TestDeiterichOneStateVar(object):
         self.model.solve()
 
     def test_phaseplot(self):
-        plotting.phasePlot(self.model)
+        plot.phasePlot(self.model)
 
     @raises(ValueError)
     def test_phaseplot3D(self):
-        plotting.phasePlot3D(self.model)
+        plot.phasePlot3D(self.model)
 
     def test_dispplot(self):
-        plotting.dispPlot(self.model)
+        plot.dispPlot(self.model)
 
     def test_timeplot(self):
-        plotting.timePlot(self.model)
+        plot.timePlot(self.model)
 
     def test_friction(self):
         truth = np.array(
@@ -341,16 +341,16 @@ class TestDeiterichTwoStateVar(object):
         self.model.solve()
 
     def test_phaseplot(self):
-        plotting.phasePlot(self.model)
+        plot.phasePlot(self.model)
 
     def test_phaseplot3D(self):
-        plotting.phasePlot3D(self.model)
+        plot.phasePlot3D(self.model)
 
     def test_dispplot(self):
-        plotting.dispPlot(self.model)
+        plot.dispPlot(self.model)
 
     def test_timeplot(self):
-        plotting.timePlot(self.model)
+        plot.timePlot(self.model)
 
     def test_friction(self):
         truth = np.array(
@@ -910,17 +910,17 @@ class TestNagataOneStateVar(object):
         self.model.solve(hmax=0.01)
 
     def test_phaseplot(self):
-        plotting.phasePlot(self.model)
+        plot.phasePlot(self.model)
 
     @raises(ValueError)
     def test_phaseplot3D(self):
-        plotting.phasePlot3D(self.model)
+        plot.phasePlot3D(self.model)
 
     def test_dispplot(self):
-        plotting.dispPlot(self.model)
+        plot.dispPlot(self.model)
 
     def test_timeplot(self):
-        plotting.timePlot(self.model)
+        plot.timePlot(self.model)
 
     def test_friction(self):
         truth = np.array(
