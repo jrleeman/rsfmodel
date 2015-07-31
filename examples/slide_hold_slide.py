@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
 from rsfmodel import rsf, staterelations, plotting
 
 model = rsf.Model()

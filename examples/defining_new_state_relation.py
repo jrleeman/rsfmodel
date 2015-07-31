@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
 from math import log
 from rsfmodel import rsf, plotting, staterelations
 
