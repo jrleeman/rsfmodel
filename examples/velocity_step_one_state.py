@@ -32,7 +32,7 @@ model.solve()
 # Make the phase plot
 plotting.phasePlot(model)
 
-# Make a plot in displacementdes
+# Make a plot in displacement
 plotting.dispPlot(model)
 
 # Make a plot in time
