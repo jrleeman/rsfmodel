@@ -1,7 +1,7 @@
 from nose.tools import *
 import matplotlib
 matplotlib.use('agg')
-from rsfmodel import rsf
+from rsfmodel import rsf, staterelations, plot
 from rsfmodel.rsf import IncompleteModelError
 import numpy as np
 
@@ -15,7 +15,7 @@ class TestDeiterichOneStateVar(object):
         self.model.k = 1e-3
         self.model.v = 1.
         self.model.vref = 1.
-        state1 = rsf.DieterichState()
+        state1 = staterelations.DieterichState()
         state1.b = 0.01
         state1.Dc = 10.
         self.model.state_relations = [state1]
@@ -26,17 +26,17 @@ class TestDeiterichOneStateVar(object):
         self.model.solve()
 
     def test_phaseplot(self):
-        rsf.phasePlot(self.model)
+        plot.phasePlot(self.model)
 
     @raises(ValueError)
     def test_phaseplot3D(self):
-        rsf.phasePlot3D(self.model)
+        plot.phasePlot3D(self.model)
 
     def test_dispplot(self):
-        rsf.dispPlot(self.model)
+        plot.dispPlot(self.model)
 
     def test_timeplot(self):
-        rsf.timePlot(self.model)
+        plot.timePlot(self.model)
 
     def test_friction(self):
         truth = np.array(
@@ -128,7 +128,7 @@ class TestRuinaOneStateVar(object):
         self.model.k = 1e-3
         self.model.v = 1.
         self.model.vref = 1.
-        state1 = rsf.RuinaState()
+        state1 = staterelations.RuinaState()
         state1.b = 0.005
         state1.Dc = 10.
         self.model.state_relations = [state1]
@@ -227,7 +227,7 @@ class TestPerrinOneStateVar(object):
         self.model.k = 1e-3
         self.model.v = 1.
         self.model.vref = 1.
-        state1 = rsf.PrzState()
+        state1 = staterelations.PrzState()
         state1.b = 0.005
         state1.Dc = 10.
         self.model.state_relations = [state1]
@@ -326,11 +326,11 @@ class TestDeiterichTwoStateVar(object):
         self.model.k = 3e-3
         self.model.v = 1.
         self.model.vref = 1.
-        state1 = rsf.DieterichState()
+        state1 = staterelations.DieterichState()
         state1.b = 0.0185
         state1.Dc = 5.
 
-        state2 = rsf.DieterichState()
+        state2 = staterelations.DieterichState()
         state2.b = 0.0088
         state2.Dc = 50.
         self.model.state_relations = [state1, state2]
@@ -341,16 +341,16 @@ class TestDeiterichTwoStateVar(object):
         self.model.solve()
 
     def test_phaseplot(self):
-        rsf.phasePlot(self.model)
+        plot.phasePlot(self.model)
 
     def test_phaseplot3D(self):
-        rsf.phasePlot3D(self.model)
+        plot.phasePlot3D(self.model)
 
     def test_dispplot(self):
-        rsf.dispPlot(self.model)
+        plot.dispPlot(self.model)
 
     def test_timeplot(self):
-        rsf.timePlot(self.model)
+        plot.timePlot(self.model)
 
     def test_friction(self):
         truth = np.array(
@@ -457,11 +457,11 @@ class TestRuinaTwoStateVar(object):
         self.model.k = 8e-3
         self.model.v = 1.
         self.model.vref = 1.
-        state1 = rsf.RuinaState()
+        state1 = staterelations.RuinaState()
         state1.b = 0.0185
         state1.Dc = 5.
 
-        state2 = rsf.RuinaState()
+        state2 = staterelations.RuinaState()
         state2.b = 0.0088
         state2.Dc = 50.
         self.model.state_relations = [state1, state2]
@@ -576,7 +576,7 @@ class TestPRZOneStateVar(object):
         self.model.k = 3e-3
         self.model.v = 1.
         self.model.vref = 1.
-        state1 = rsf.PrzState()
+        state1 = staterelations.PrzState()
         state1.b = 0.01
         state1.Dc = 5.
         self.model.state_relations = [state1]
@@ -676,11 +676,11 @@ class TestPRZTwoStateVar(object):
         self.model.k = 3e-3
         self.model.v = 1.
         self.model.vref = 1.
-        state1 = rsf.PrzState()
+        state1 = staterelations.PrzState()
         state1.b = 0.01
         state1.Dc = 5.
 
-        state2 = rsf.PrzState()
+        state2 = staterelations.PrzState()
         state2.b = 0.005
         state2.Dc = 3.
         self.model.state_relations = [state1, state2]
@@ -796,11 +796,11 @@ class TestRuinaTwoStateVarMissing(object):
         self.model.k = 8e-3
         self.model.v = 1.
         self.model.vref = 1.
-        state1 = rsf.RuinaState()
+        state1 = staterelations.RuinaState()
         state1.b = 0.0185
         state1.Dc = 5.
 
-        state2 = rsf.RuinaState()
+        state2 = staterelations.RuinaState()
         state2.b = 0.0088
         state2.Dc = 50.
         self.model.state_relations = [state1, state2]
@@ -842,10 +842,10 @@ class TestRuinaTwoStateVarMissing(object):
 
     @raises(IncompleteModelError)
     def test_state1_b_missing(self):
-        state1 = rsf.RuinaState()
+        state1 = staterelations.RuinaState()
         state1.Dc = 5.
 
-        state2 = rsf.RuinaState()
+        state2 = staterelations.RuinaState()
         state2.b = 0.0088
         state2.Dc = 50.
         self.model.state_relations = [state1, state2]
@@ -853,21 +853,21 @@ class TestRuinaTwoStateVarMissing(object):
 
     @raises(IncompleteModelError)
     def test_state2_b_missing(self):
-        state1 = rsf.RuinaState()
+        state1 = staterelations.RuinaState()
         state1.b = 0.0185
         state1.Dc = 5.
 
-        state2 = rsf.RuinaState()
+        state2 = staterelations.RuinaState()
         state2.Dc = 50.
         self.model.state_relations = [state1, state2]
         self.model.solve()
 
     @raises(IncompleteModelError)
     def test_state1_Dc_missing(self):
-        state1 = rsf.RuinaState()
+        state1 = staterelations.RuinaState()
         state1.b = 0.0185
 
-        state2 = rsf.RuinaState()
+        state2 = staterelations.RuinaState()
         state2.b = 0.0088
         state2.Dc = 50.
         self.model.state_relations = [state1, state2]
@@ -875,11 +875,11 @@ class TestRuinaTwoStateVarMissing(object):
 
     @raises(IncompleteModelError)
     def test_state2Dcb_missing(self):
-        state1 = rsf.RuinaState()
+        state1 = staterelations.RuinaState()
         state1.b = 0.0185
         state1.Dc = 5.
 
-        state2 = rsf.RuinaState()
+        state2 = staterelations.RuinaState()
         state2.b = 0.0088
         self.model.state_relations = [state1, state2]
         self.model.solve()
@@ -898,7 +898,7 @@ class TestNagataOneStateVar(object):
         self.model.k = 0.01
         self.model.v = 1.
         self.model.vref = 1.
-        state1 = rsf.NagataState()
+        state1 = staterelations.NagataState()
         state1.b = 0.029
         state1.Dc = 3.33
         state1.c = 2.
@@ -910,17 +910,17 @@ class TestNagataOneStateVar(object):
         self.model.solve(hmax=0.01)
 
     def test_phaseplot(self):
-        rsf.phasePlot(self.model)
+        plot.phasePlot(self.model)
 
     @raises(ValueError)
     def test_phaseplot3D(self):
-        rsf.phasePlot3D(self.model)
+        plot.phasePlot3D(self.model)
 
     def test_dispplot(self):
-        rsf.dispPlot(self.model)
+        plot.dispPlot(self.model)
 
     def test_timeplot(self):
-        rsf.timePlot(self.model)
+        plot.timePlot(self.model)
 
     def test_friction(self):
         truth = np.array(
@@ -1001,3 +1001,4 @@ class TestNagataOneStateVar(object):
            310.])
 
         np.testing.assert_almost_equal(self.model.results.loadpoint_displacement, truth, 8)
+        

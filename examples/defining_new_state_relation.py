@@ -1,14 +1,13 @@
 import numpy as np
-import matplotlib.pyplot as plt
 from math import log
-from rsfmodel import rsf
+from rsfmodel import rsf, plot, staterelations
 
 # This is really just the Ruina realtion, but let's pretend we invented it!
 # We'll inherit attributes from rsf.StateRelation, but you wouldn't have to.
 # It does provide velocity contribution calculation for us though!
 
 
-class MyStateRelation(rsf.StateRelation):
+class MyStateRelation(staterelations.StateRelation):
     # Need to provide a steady state calcualtion method
     def set_steady_state(self, system):
         self.state = self.Dc/system.vref
@@ -45,10 +44,10 @@ model.loadpoint_velocity = lp_velocity
 model.solve()
 
 # Make the phase plot
-rsf.phasePlot(model)
+plot.phasePlot(model)
 
 # Make a plot in displacement
-rsf.dispPlot(model)
+plot.dispPlot(model)
 
 # Make a plot in time
-rsf.timePlot(model)
+plot.timePlot(model)

@@ -1,6 +1,5 @@
 import numpy as np
-import matplotlib.pyplot as plt
-from rsfmodel import rsf
+from rsfmodel import rsf, staterelations, plot
 
 model = rsf.Model()
 
@@ -11,7 +10,7 @@ model.k = 1e-3 # Normalized System stiffness (friction/micron)
 model.v = 1. # Initial slider velocity, generally is vlp(t=0)
 model.vref = 1. # Reference velocity, generally vlp(t=0)
 
-state1 = rsf.DieterichState()
+state1 = staterelations.DieterichState()
 state1.b = 0.01  # Empirical coefficient for the evolution effect
 state1.Dc = 10.  # Critical slip distance
 
@@ -31,10 +30,10 @@ model.loadpoint_velocity = lp_velocity
 model.solve()
 
 # Make the phase plot
-rsf.phasePlot(model)
+plot.phasePlot(model)
 
 # Make a plot in displacement
-rsf.dispPlot(model)
+plot.dispPlot(model)
 
 # Make a plot in time
-rsf.timePlot(model)
+plot.timePlot(model)
