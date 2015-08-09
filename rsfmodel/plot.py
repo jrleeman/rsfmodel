@@ -175,4 +175,4 @@ def timePlot(system):
     ax4.set_ylabel('Loadpoint Velocity')
     ax4.set_xlabel('Time')
     plt.show()
-    return fig, a1, ax2, ax3, x4
+    return fig, ax1, ax2, ax3, ax4
