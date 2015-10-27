@@ -3,7 +3,24 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
 def phasePlot(system, fig=None, ax1=None):
-    """ Make a phase plot of the current model. """
+    """ Make a phase plot of the current model.
+
+    Parameters
+    ----------
+    system : model object
+        Model object that has been solved containing results
+    fig : figure object
+        Figure object to plot on. New will be created if None.
+    ax1 : axes object
+        Axes to plot data on. New will be created if None.
+
+    Returns
+    -------
+    fig : figure object
+        Figure object that contains plot
+    ax1 : axes object
+        Axes object that contains plot
+    """
     if fig is None:
         fig = plt.figure(figsize=(8, 7))
 
@@ -39,7 +56,26 @@ def phasePlot(system, fig=None, ax1=None):
 
 
 def phasePlot3D(system, fig=None, ax1=None, state_variable=2):
-    """ Make a 3D phase plot of the current model. """
+    """ Make a 3D phase plot of the current model.
+
+    Parameters
+    ----------
+    system : model object
+        Model object that has been solved containing results
+    fig : figure object
+        Figure object to plot on. New will be created if None.
+    ax1 : axes object
+        Axes to plot data on. New will be created if None.
+    state_variable : int
+        Which state variable will be plotted on the third axis.
+
+    Returns
+    -------
+    fig : figure object
+        Figure object that contains plot
+    ax1 : axes object
+        Axes object that contains plot
+    """
 
     if np.shape(system.results.states)[1] < 2:
         raise ValueError('Must be a multi state-variable system for 3D plotting')
@@ -65,7 +101,27 @@ def phasePlot3D(system, fig=None, ax1=None, state_variable=2):
 
 
 def dispPlot(system):
-    """ Make a standard plot with displacement as the x variable """
+    """ Make a standard plot with displacement as the x variable
+
+    Parameters
+    ----------
+    system : model object
+        Model object that has been solved containing results
+
+    Returns
+    -------
+    fig : figure object
+        Figure object that contains plot
+    ax1 : axes object
+        Axes object that contains plot
+    ax2 : axes object
+        Axes object that contains plot
+    ax3 : axes object
+        Axes object that contains plot
+    ax4 : axes object
+        Axes object that contains plot
+    """
+
     fig = plt.figure(figsize=(12, 9))
     ax1 = plt.subplot(411)
     ax2 = plt.subplot(412, sharex=ax1)
@@ -81,10 +137,29 @@ def dispPlot(system):
     ax4.set_ylabel('Loadpoint Velocity')
     ax4.set_xlabel('Displacement')
     plt.show()
-
+    return fig, ax1, ax2, ax3, ax4
 
 def timePlot(system):
-    """ Make a standard plot with time as the x variable """
+    """ Make a standard plot with time as the x variable
+
+    Parameters
+    ----------
+    system : model object
+        Model object that has been solved containing results
+
+    Returns
+    -------
+    fig : figure object
+        Figure object that contains plot
+    ax1 : axes object
+        Axes object that contains plot
+    ax2 : axes object
+        Axes object that contains plot
+    ax3 : axes object
+        Axes object that contains plot
+    ax4 : axes object
+        Axes object that contains plot
+    """
     fig = plt.figure(figsize=(12, 9))
     ax1 = plt.subplot(411)
     ax2 = plt.subplot(412, sharex=ax1)
@@ -100,3 +175,4 @@ def timePlot(system):
     ax4.set_ylabel('Loadpoint Velocity')
     ax4.set_xlabel('Time')
     plt.show()
+    return fig, ax1, ax2, ax3, ax4

@@ -1,7 +1,5 @@
 from nose.tools import *
-import matplotlib
-matplotlib.use('agg')
-from rsfmodel import rsf, staterelations, plot
+from rsfmodel import rsf, staterelations
 from rsfmodel.rsf import IncompleteModelError
 import numpy as np
 
@@ -19,24 +17,11 @@ class TestDeiterichOneStateVar(object):
         state1.b = 0.01
         state1.Dc = 10.
         self.model.state_relations = [state1]
-        self.model.time = np.arange(0,40.01,1.)
+        self.model.time = np.arange(0, 40.01, 1.)
         lp_velocity = np.ones_like(self.model.time)
         lp_velocity[10*1:] = 10.
         self.model.loadpoint_velocity = lp_velocity
         self.model.solve()
-
-    def test_phaseplot(self):
-        plot.phasePlot(self.model)
-
-    @raises(ValueError)
-    def test_phaseplot3D(self):
-        plot.phasePlot3D(self.model)
-
-    def test_dispplot(self):
-        plot.dispPlot(self.model)
-
-    def test_timeplot(self):
-        plot.timePlot(self.model)
 
     def test_friction(self):
         truth = np.array(
@@ -52,7 +37,7 @@ class TestDeiterichOneStateVar(object):
            0.5884871, 0.58848704, 0.58848706, 0.58848708,
            0.58848708])
 
-        np.testing.assert_almost_equal(self.model.results.friction, truth,8)
+        np.testing.assert_almost_equal(self.model.results.friction, truth, 8)
 
     def test_state(self):
         truth = np.array(
@@ -68,7 +53,8 @@ class TestDeiterichOneStateVar(object):
            0.99999738, 0.99999604, 0.99999978, 1.00000139,
            1.00000049])
 
-        np.testing.assert_almost_equal(self.model.results.states, truth.reshape((41,1)), 8)
+        np.testing.assert_almost_equal(self.model.results.states,
+                                       truth.reshape((41, 1)), 8)
 
     def test_slider_velocity(self):
         truth = np.array(
@@ -84,7 +70,8 @@ class TestDeiterichOneStateVar(object):
            10.00009344, 10.00001142, 9.99996902, 9.99998658,
            10.0000074])
 
-        np.testing.assert_almost_equal(self.model.results.slider_velocity, truth, 8)
+        np.testing.assert_almost_equal(self.model.results.slider_velocity,
+                                       truth, 8)
 
     def test_time(self):
         truth = np.array(
@@ -116,7 +103,8 @@ class TestDeiterichOneStateVar(object):
            270., 280., 290., 300.,
            310.])
 
-        np.testing.assert_almost_equal(self.model.results.loadpoint_displacement, truth, 8)
+        np.testing.assert_almost_equal(self.model.results.
+                                       loadpoint_displacement, truth, 8)
 
 
 class TestRuinaOneStateVar(object):
@@ -132,7 +120,7 @@ class TestRuinaOneStateVar(object):
         state1.b = 0.005
         state1.Dc = 10.
         self.model.state_relations = [state1]
-        self.model.time = np.arange(0,40.01,1.)
+        self.model.time = np.arange(0, 40.01, 1.)
         lp_velocity = np.ones_like(self.model.time)
         lp_velocity[10*1:] = 10.
         self.model.loadpoint_velocity = lp_velocity
@@ -152,7 +140,7 @@ class TestRuinaOneStateVar(object):
            0.61151293, 0.61151293, 0.61151293, 0.61151293,
            0.61151293])
 
-        np.testing.assert_almost_equal(self.model.results.friction, truth,8)
+        np.testing.assert_almost_equal(self.model.results.friction, truth, 8)
 
     def test_state(self):
         truth = np.array(
@@ -167,7 +155,8 @@ class TestRuinaOneStateVar(object):
            1.00000038, 1.00000003, 0.99999994, 0.99999995,
            0.99999997, 0.99999999, 1., 1., 1.])
 
-        np.testing.assert_almost_equal(self.model.results.states, truth.reshape((41,1)), 8)
+        np.testing.assert_almost_equal(self.model.results.states,
+                                       truth.reshape((41, 1)), 8)
 
     def test_slider_velocity(self):
         truth = np.array(
@@ -183,7 +172,8 @@ class TestRuinaOneStateVar(object):
            10.00000002, 9.99999995, 9.99999996, 9.99999998,
            9.99999999])
 
-        np.testing.assert_almost_equal(self.model.results.slider_velocity, truth, 8)
+        np.testing.assert_almost_equal(self.model.results.slider_velocity,
+                                       truth, 8)
 
     def test_time(self):
         truth = np.array(
@@ -215,7 +205,8 @@ class TestRuinaOneStateVar(object):
            270., 280., 290., 300.,
            310.])
 
-        np.testing.assert_almost_equal(self.model.results.loadpoint_displacement, truth, 8)
+        np.testing.assert_almost_equal(self.model.results.
+                                       loadpoint_displacement, truth, 8)
 
 
 class TestPerrinOneStateVar(object):
@@ -231,7 +222,7 @@ class TestPerrinOneStateVar(object):
         state1.b = 0.005
         state1.Dc = 10.
         self.model.state_relations = [state1]
-        self.model.time = np.arange(0,40.01,1.)
+        self.model.time = np.arange(0, 40.01, 1.)
         lp_velocity = np.ones_like(self.model.time)
         lp_velocity[10*1:] = 10.
         self.model.loadpoint_velocity = lp_velocity
@@ -251,7 +242,7 @@ class TestPerrinOneStateVar(object):
            0.61151293, 0.61151293, 0.61151293, 0.61151293,
            0.61151293])
 
-        np.testing.assert_almost_equal(self.model.results.friction, truth,8)
+        np.testing.assert_almost_equal(self.model.results.friction, truth, 8)
 
     def test_state(self):
         truth = np.array(
@@ -267,7 +258,8 @@ class TestPerrinOneStateVar(object):
            1.99999996, 1.99999999, 2., 2.,
            2.])
 
-        np.testing.assert_almost_equal(self.model.results.states, truth.reshape((41,1)), 8)
+        np.testing.assert_almost_equal(self.model.results.states,
+                                       truth.reshape((41, 1)), 8)
 
     def test_slider_velocity(self):
         truth = np.array(
@@ -283,7 +275,8 @@ class TestPerrinOneStateVar(object):
            9.99999999, 9.99999995, 9.99999997, 9.99999999,
            10.])
 
-        np.testing.assert_almost_equal(self.model.results.slider_velocity, truth, 8)
+        np.testing.assert_almost_equal(self.model.results.slider_velocity,
+                                       truth, 8)
 
     def test_time(self):
         truth = np.array(
@@ -315,7 +308,9 @@ class TestPerrinOneStateVar(object):
            270., 280., 290., 300.,
            310.])
 
-        np.testing.assert_almost_equal(self.model.results.loadpoint_displacement, truth, 8)
+        np.testing.assert_almost_equal(self.model.results.
+                                       loadpoint_displacement, truth, 8)
+
 
 class TestDeiterichTwoStateVar(object):
 
@@ -334,23 +329,11 @@ class TestDeiterichTwoStateVar(object):
         state2.b = 0.0088
         state2.Dc = 50.
         self.model.state_relations = [state1, state2]
-        self.model.time = np.arange(0,40.01,1.)
+        self.model.time = np.arange(0, 40.01, 1.)
         lp_velocity = np.ones_like(self.model.time)
         lp_velocity[10*1:] = 10.
         self.model.loadpoint_velocity = lp_velocity
         self.model.solve()
-
-    def test_phaseplot(self):
-        plot.phasePlot(self.model)
-
-    def test_phaseplot3D(self):
-        plot.phasePlot3D(self.model)
-
-    def test_dispplot(self):
-        plot.dispPlot(self.model)
-
-    def test_timeplot(self):
-        plot.timePlot(self.model)
 
     def test_friction(self):
         truth = np.array(
@@ -366,7 +349,7 @@ class TestDeiterichTwoStateVar(object):
            0.56503146, 0.56498223, 0.5649422, 0.56490967,
            0.56488327])
 
-        np.testing.assert_almost_equal(self.model.results.friction, truth,8)
+        np.testing.assert_almost_equal(self.model.results.friction, truth, 8)
 
     def test_state1(self):
         truth = np.array(
@@ -382,7 +365,8 @@ class TestDeiterichTwoStateVar(object):
            0.4989905, 0.4991779, 0.4993312, 0.49945649,
            0.49955867])
 
-        np.testing.assert_almost_equal(self.model.results.states[:,0], truth, 8)
+        np.testing.assert_almost_equal(self.model.results.states[:, 0],
+                                       truth, 8)
 
     def test_state2(self):
         truth = np.array(
@@ -398,7 +382,8 @@ class TestDeiterichTwoStateVar(object):
            5.1596709, 5.12920263, 5.1045488, 5.08459968,
            5.06845739])
 
-        np.testing.assert_almost_equal(self.model.results.states[:,1], truth, 8)
+        np.testing.assert_almost_equal(self.model.results.states[:, 1],
+                                       truth, 8)
 
     def test_slider_velocity(self):
         truth = np.array(
@@ -414,7 +399,8 @@ class TestDeiterichTwoStateVar(object):
            10.01816004, 10.01477376, 10.01200822, 10.00975089,
            10.00791305])
 
-        np.testing.assert_almost_equal(self.model.results.slider_velocity, truth, 8)
+        np.testing.assert_almost_equal(self.model.results.slider_velocity,
+                                       truth, 8)
 
     def test_time(self):
         truth = np.array(
@@ -446,7 +432,9 @@ class TestDeiterichTwoStateVar(object):
            270., 280., 290., 300.,
            310.])
 
-        np.testing.assert_almost_equal(self.model.results.loadpoint_displacement, truth, 8)
+        np.testing.assert_almost_equal(self.model.results.
+                                       loadpoint_displacement, truth, 8)
+
 
 class TestRuinaTwoStateVar(object):
 
@@ -465,7 +453,7 @@ class TestRuinaTwoStateVar(object):
         state2.b = 0.0088
         state2.Dc = 50.
         self.model.state_relations = [state1, state2]
-        self.model.time = np.arange(0,40.01,1.)
+        self.model.time = np.arange(0, 40.01, 1.)
         lp_velocity = np.ones_like(self.model.time)
         lp_velocity[10*1:] = 10.
         self.model.loadpoint_velocity = lp_velocity
@@ -485,7 +473,7 @@ class TestRuinaTwoStateVar(object):
            0.56485404, 0.56483859, 0.56482599, 0.56481572,
            0.56480735])
 
-        np.testing.assert_almost_equal(self.model.results.friction, truth,8)
+        np.testing.assert_almost_equal(self.model.results.friction, truth, 8)
 
     def test_state1(self):
         truth = np.array(
@@ -501,7 +489,8 @@ class TestRuinaTwoStateVar(object):
            0.49988105, 0.49990304, 0.49992097, 0.49993558,
            0.49994749])
 
-        np.testing.assert_almost_equal(self.model.results.states[:,0], truth, 8)
+        np.testing.assert_almost_equal(self.model.results.states[:, 0],
+                                       truth, 8)
 
     def test_state2(self):
         truth = np.array(
@@ -517,7 +506,8 @@ class TestRuinaTwoStateVar(object):
            5.04877914, 5.03972433, 5.03235598, 5.0263581,
            5.02147453])
 
-        np.testing.assert_almost_equal(self.model.results.states[:,1], truth, 8)
+        np.testing.assert_almost_equal(self.model.results.states[:, 1],
+                                       truth, 8)
 
     def test_slider_velocity(self):
         truth = np.array(
@@ -533,7 +523,8 @@ class TestRuinaTwoStateVar(object):
            10.00213635, 10.00174128, 10.00141929, 10.00115686,
            10.00094295])
 
-        np.testing.assert_almost_equal(self.model.results.slider_velocity, truth, 8)
+        np.testing.assert_almost_equal(self.model.results.
+                                       slider_velocity, truth, 8)
 
     def test_time(self):
         truth = np.array(
@@ -565,7 +556,9 @@ class TestRuinaTwoStateVar(object):
            270., 280., 290., 300.,
            310.])
 
-        np.testing.assert_almost_equal(self.model.results.loadpoint_displacement, truth, 8)
+        np.testing.assert_almost_equal(self.model.results.
+                                       loadpoint_displacement, truth, 8)
+
 
 class TestPRZOneStateVar(object):
 
@@ -580,7 +573,7 @@ class TestPRZOneStateVar(object):
         state1.b = 0.01
         state1.Dc = 5.
         self.model.state_relations = [state1]
-        self.model.time = np.arange(0,40.01,1)
+        self.model.time = np.arange(0, 40.01, 1)
         lp_velocity = np.ones_like(self.model.time)
         lp_velocity[10*1:] = 10.
         self.model.loadpoint_velocity = lp_velocity
@@ -591,48 +584,50 @@ class TestPRZOneStateVar(object):
           [0.6, 0.6, 0.6, 0.6,
            0.6, 0.6, 0.6, 0.6,
            0.6, 0.6, 0.6, 0.61505335,
-            0.60008169, 0.60202942, 0.60245015, 0.60230027,
-            0.60229482, 0.60230363, 0.60230288, 0.60230249,
-            0.60230258, 0.60230259, 0.60230258, 0.60230258,
-            0.60230259, 0.60230259, 0.60230259, 0.60230259,
-            0.60230259, 0.60230259, 0.60230259, 0.60230259,
-            0.60230259, 0.60230259, 0.60230259, 0.60230259,
-            0.60230259, 0.60230259, 0.60230259, 0.60230259,
-            0.60230259])
+           0.60008169, 0.60202942, 0.60245015, 0.60230027,
+           0.60229482, 0.60230363, 0.60230288, 0.60230249,
+           0.60230258, 0.60230259, 0.60230258, 0.60230258,
+           0.60230259, 0.60230259, 0.60230259, 0.60230259,
+           0.60230259, 0.60230259, 0.60230259, 0.60230259,
+           0.60230259, 0.60230259, 0.60230259, 0.60230259,
+           0.60230259, 0.60230259, 0.60230259, 0.60230259,
+           0.60230259])
 
-        np.testing.assert_almost_equal(self.model.results.friction, truth,8)
+        np.testing.assert_almost_equal(self.model.results.friction, truth, 8)
 
     def test_state(self):
         truth = np.array(
           [10., 10., 10., 10.,
-        10., 10., 10., 10.,
-        10., 10., 10., 2.09747593,
-        0.81845159, 1.02623769, 1.00892332, 0.99754925,
-        0.99981141, 1.00015612, 0.99999181, 0.99999246,
-        1.00000134, 1.00000025, 0.9999999, 1.,
-        1.00000001, 1., 1., 1.,
-        1., 1., 1., 1.,
-        1., 1., 1., 1.,
-        1., 1., 1., 1.,
-        1.])
+           10., 10., 10., 10.,
+           10., 10., 10., 2.09747593,
+           0.81845159, 1.02623769, 1.00892332, 0.99754925,
+           0.99981141, 1.00015612, 0.99999181, 0.99999246,
+           1.00000134, 1.00000025, 0.9999999, 1.,
+           1.00000001, 1., 1., 1.,
+           1., 1., 1., 1.,
+           1., 1., 1., 1.,
+           1., 1., 1., 1.,
+           1.])
 
-        np.testing.assert_almost_equal(self.model.results.states, truth.reshape((41,1)), 8)
+        np.testing.assert_almost_equal(self.model.results.states,
+                                       truth.reshape((41, 1)), 8)
 
     def test_slider_velocity(self):
         truth = np.array(
           [1., 1., 1., 1.,
-        1., 1., 1., 1.,
-        1., 1., 1., 16.25418209,
-        9.80422815, 9.52773797, 10.05352858, 10.02022142,
-        9.99465394, 9.99953164, 10.00034701, 9.99998443,
-        9.99998292, 10.00000287, 10.00000059, 9.99999977,
-        9.99999999, 10.00000001, 10., 10.,
-        10., 10., 10., 10.,
-        10., 10., 10., 10.,
-        10., 10., 10., 10.,
-        10.])
+           1., 1., 1., 1.,
+           1., 1., 1., 16.25418209,
+           9.80422815, 9.52773797, 10.05352858, 10.02022142,
+           9.99465394, 9.99953164, 10.00034701, 9.99998443,
+           9.99998292, 10.00000287, 10.00000059, 9.99999977,
+           9.99999999, 10.00000001, 10., 10.,
+           10., 10., 10., 10.,
+           10., 10., 10., 10.,
+           10., 10., 10., 10.,
+           10.])
 
-        np.testing.assert_almost_equal(self.model.results.slider_velocity, truth, 8)
+        np.testing.assert_almost_equal(self.model.results.
+                                       slider_velocity, truth, 8)
 
     def test_time(self):
         truth = np.array(
@@ -664,7 +659,8 @@ class TestPRZOneStateVar(object):
            270., 280., 290., 300.,
            310.])
 
-        np.testing.assert_almost_equal(self.model.results.loadpoint_displacement, truth, 8)
+        np.testing.assert_almost_equal(self.model.results.
+                                       loadpoint_displacement, truth, 8)
 
 
 class TestPRZTwoStateVar(object):
@@ -684,7 +680,7 @@ class TestPRZTwoStateVar(object):
         state2.b = 0.005
         state2.Dc = 3.
         self.model.state_relations = [state1, state2]
-        self.model.time = np.arange(0,40.01,1.)
+        self.model.time = np.arange(0, 40.01, 1.)
         lp_velocity = np.ones_like(self.model.time)
         lp_velocity[10*1:] = 10.
         self.model.loadpoint_velocity = lp_velocity
@@ -693,66 +689,69 @@ class TestPRZTwoStateVar(object):
     def test_friction(self):
         truth = np.array(
           [0.6, 0.6, 0.6, 0.6,
-        0.6, 0.6, 0.6, 0.6,
-        0.6, 0.6, 0.6, 0.62332749,
-        0.61662392, 0.60925037, 0.61102238, 0.61175384,
-        0.61157669, 0.61148672, 0.611505, 0.61151574,
-        0.6115139, 0.61151263, 0.61151281, 0.61151296,
-        0.61151294, 0.61151292, 0.61151292, 0.61151293,
-        0.61151293, 0.61151293, 0.61151293, 0.61151293,
-        0.61151293, 0.61151293, 0.61151293, 0.61151293,
-        0.61151293, 0.61151293, 0.61151293, 0.61151293,
-        0.61151293])
+           0.6, 0.6, 0.6, 0.6,
+           0.6, 0.6, 0.6, 0.62332749,
+           0.61662392, 0.60925037, 0.61102238, 0.61175384,
+           0.61157669, 0.61148672, 0.611505, 0.61151574,
+           0.6115139, 0.61151263, 0.61151281, 0.61151296,
+           0.61151294, 0.61151292, 0.61151292, 0.61151293,
+           0.61151293, 0.61151293, 0.61151293, 0.61151293,
+           0.61151293, 0.61151293, 0.61151293, 0.61151293,
+           0.61151293, 0.61151293, 0.61151293, 0.61151293,
+           0.61151293])
 
-        np.testing.assert_almost_equal(self.model.results.friction, truth,8)
+        np.testing.assert_almost_equal(self.model.results.friction, truth, 8)
 
     def test_state1(self):
         truth = np.array(
           [10., 10., 10., 10.,
-        10., 10., 10., 10.,
-        10., 10., 10., 6.84431098,
-        0.72378553, 0.86994234, 1.03299015, 1.01865937,
-        0.99670972, 0.99782031, 1.00032473, 1.00025833,
-        0.99996907, 0.99996963, 1.00000281, 1.00000355,
-        0.99999976, 0.99999959, 1.00000002, 1.00000005,
-        1., 0.99999999, 1., 1.,
-        1., 1., 1., 1.,
-        1., 1., 1., 1.,
-        1.])
+           10., 10., 10., 10.,
+           10., 10., 10., 6.84431098,
+           0.72378553, 0.86994234, 1.03299015, 1.01865937,
+           0.99670972, 0.99782031, 1.00032473, 1.00025833,
+           0.99996907, 0.99996963, 1.00000281, 1.00000355,
+           0.99999976, 0.99999959, 1.00000002, 1.00000005,
+           1., 0.99999999, 1., 1.,
+           1., 1., 1., 1.,
+           1., 1., 1., 1.,
+           1.])
 
-        np.testing.assert_almost_equal(self.model.results.states[:,0], truth, 8)
+        np.testing.assert_almost_equal(self.model.results.states[:, 0],
+                                       truth, 8)
 
     def test_state2(self):
         truth = np.array(
           [6., 6., 6., 6.,
-        6., 6., 6., 6.,
-        6., 6., 6., 3.4500867,
-        0.36317378, 0.55303551, 0.63530577, 0.60831617,
-        0.59630691, 0.59898905, 0.60040086, 0.60012611,
-        0.59995714, 0.5999845, 0.60000454, 0.60000189,
-        0.59999953, 0.59999977, 0.60000005, 0.60000003,
-        0.6, 0.6, 0.6, 0.6,
-        0.6, 0.6, 0.6, 0.6,
-        0.6, 0.6, 0.6, 0.6,
-        0.6])
+           6., 6., 6., 6.,
+           6., 6., 6., 3.4500867,
+           0.36317378, 0.55303551, 0.63530577, 0.60831617,
+           0.59630691, 0.59898905, 0.60040086, 0.60012611,
+           0.59995714, 0.5999845, 0.60000454, 0.60000189,
+           0.59999953, 0.59999977, 0.60000005, 0.60000003,
+           0.6, 0.6, 0.6, 0.6,
+           0.6, 0.6, 0.6, 0.6,
+           0.6, 0.6, 0.6, 0.6,
+           0.6])
 
-        np.testing.assert_almost_equal(self.model.results.states[:,1], truth, 8)
+        np.testing.assert_almost_equal(self.model.results.states[:, 1],
+                                       truth, 8)
 
     def test_slider_velocity(self):
         truth = np.array(
           [1., 1., 1., 1.,
-        1., 1., 1., 1.,
-        1., 1., 1., 4.45620908,
-        17.20632436, 9.77177682, 9.46437404, 9.99361157,
-        10.06399985, 10.00202131, 9.99274721, 9.99958814,
-        10.000822, 10.0000672, 9.99990739, 9.99999004,
-        10.00001038, 10.00000139, 9.99999884, 9.99999981,
-        10.00000013, 10.00000002, 9.99999999, 10.,
-        10., 10., 10., 10.,
-        10., 10., 10., 10.,
-        10.])
+           1., 1., 1., 1.,
+           1., 1., 1., 4.45620908,
+           17.20632436, 9.77177682, 9.46437404, 9.99361157,
+           10.06399985, 10.00202131, 9.99274721, 9.99958814,
+           10.000822, 10.0000672, 9.99990739, 9.99999004,
+           10.00001038, 10.00000139, 9.99999884, 9.99999981,
+           10.00000013, 10.00000002, 9.99999999, 10.,
+           10., 10., 10., 10.,
+           10., 10., 10., 10.,
+           10.])
 
-        np.testing.assert_almost_equal(self.model.results.slider_velocity, truth, 8)
+        np.testing.assert_almost_equal(self.model.results.
+                                       slider_velocity, truth, 8)
 
     def test_time(self):
         truth = np.array(
@@ -784,7 +783,8 @@ class TestPRZTwoStateVar(object):
            270., 280., 290., 300.,
            310.])
 
-        np.testing.assert_almost_equal(self.model.results.loadpoint_displacement, truth, 8)
+        np.testing.assert_almost_equal(self.model.results.
+                                       loadpoint_displacement, truth, 8)
 
 
 class TestRuinaTwoStateVarMissing(object):
@@ -804,7 +804,7 @@ class TestRuinaTwoStateVarMissing(object):
         state2.b = 0.0088
         state2.Dc = 50.
         self.model.state_relations = [state1, state2]
-        self.model.time = np.arange(0,40.01,1.)
+        self.model.time = np.arange(0, 40.01, 1.)
         lp_velocity = np.ones_like(self.model.time)
         lp_velocity[10*1:] = 10.
         self.model.loadpoint_velocity = lp_velocity
@@ -886,8 +886,9 @@ class TestRuinaTwoStateVarMissing(object):
 
     @raises(IncompleteModelError)
     def test_time_velocity_length_mismatch(self):
-        self.model.time = np.arange(0,40.01,0.1)
+        self.model.time = np.arange(0, 40.01, 0.1)
         self.model.solve()
+
 
 class TestNagataOneStateVar(object):
 
@@ -903,72 +904,61 @@ class TestNagataOneStateVar(object):
         state1.Dc = 3.33
         state1.c = 2.
         self.model.state_relations = [state1]
-        self.model.time = np.arange(0,40.01,1)
+        self.model.time = np.arange(0, 40.01, 1)
         lp_velocity = np.ones_like(self.model.time)
         lp_velocity[10*1:] = 10.
         self.model.loadpoint_velocity = lp_velocity
         self.model.solve(hmax=0.01)
 
-    def test_phaseplot(self):
-        plot.phasePlot(self.model)
-
-    @raises(ValueError)
-    def test_phaseplot3D(self):
-        plot.phasePlot3D(self.model)
-
-    def test_dispplot(self):
-        plot.dispPlot(self.model)
-
-    def test_timeplot(self):
-        plot.timePlot(self.model)
-
     def test_friction(self):
         truth = np.array(
           [0.6, 0.6, 0.6, 0.6,
-        0.6, 0.6, 0.6, 0.6,
-        0.6, 0.6, 0.6, 0.60938215,
-        0.60034494, 0.59703287, 0.59592421, 0.59556459,
-        0.59544913, 0.59541219, 0.59540038, 0.5953966,
-        0.5953954, 0.59539501, 0.59539489, 0.59539485,
-        0.59539484, 0.59539483, 0.59539483, 0.59539483,
-        0.59539483, 0.59539483, 0.59539483, 0.59539483,
-        0.59539483, 0.59539483, 0.59539483, 0.59539483,
-        0.59539483, 0.59539483, 0.59539483, 0.59539483,
-        0.59539483])
+           0.6, 0.6, 0.6, 0.6,
+           0.6, 0.6, 0.6, 0.60938215,
+           0.60034494, 0.59703287, 0.59592421, 0.59556459,
+           0.59544913, 0.59541219, 0.59540038, 0.5953966,
+           0.5953954, 0.59539501, 0.59539489, 0.59539485,
+           0.59539484, 0.59539483, 0.59539483, 0.59539483,
+           0.59539483, 0.59539483, 0.59539483, 0.59539483,
+           0.59539483, 0.59539483, 0.59539483, 0.59539483,
+           0.59539483, 0.59539483, 0.59539483, 0.59539483,
+           0.59539483])
 
-        np.testing.assert_almost_equal(self.model.results.friction, truth,8)
+        np.testing.assert_almost_equal(self.model.results.friction, truth, 8)
 
     def test_state(self):
         truth = np.array(
           [3.33, 3.33, 3.33, 3.33,
-        3.33, 3.33, 3.33, 3.33,
-        3.33, 3.33, 3.33, 0.47875177,
-        0.37623256, 0.34642714, 0.33724867, 0.33435315,
-        0.33343188, 0.33313794, 0.33304407, 0.33301408,
-        0.3330045, 0.33300144, 0.33300046, 0.33300015,
-        0.33300005, 0.33300001, 0.333, 0.333,
-        0.333, 0.333, 0.333, 0.333,
-        0.333, 0.333, 0.333, 0.333,
-        0.333, 0.333, 0.333, 0.333,
-        0.333])
+           3.33, 3.33, 3.33, 3.33,
+           3.33, 3.33, 3.33, 0.47875177,
+           0.37623256, 0.34642714, 0.33724867, 0.33435315,
+           0.33343188, 0.33313794, 0.33304407, 0.33301408,
+           0.3330045, 0.33300144, 0.33300046, 0.33300015,
+           0.33300005, 0.33300001, 0.333, 0.333,
+           0.333, 0.333, 0.333, 0.333,
+           0.333, 0.333, 0.333, 0.333,
+           0.333, 0.333, 0.333, 0.333,
+           0.333])
 
-        np.testing.assert_almost_equal(self.model.results.states, truth.reshape((41,1)), 8)
+        np.testing.assert_almost_equal(self.model.results.states,
+                                       truth.reshape((41, 1)), 8)
 
     def test_slider_velocity(self):
         truth = np.array(
           [1., 1., 1., 1.,
-        1., 1., 1., 1.,
-        1., 1., 1., 11.36686532,
-        10.53618749, 10.18376884, 10.06007654, 10.01933637,
-        10.00619248, 10.00197996, 10.00063274, 10.00020217,
-        10.00006459, 10.00002064, 10.00000659, 10.00000211,
-        10.00000067, 10.00000022, 10.00000007, 10.00000002,
-        10.00000001, 10., 10., 10.,
-        10., 10., 10., 10.,
-        10., 10., 10., 10.,
-        10.])
+           1., 1., 1., 1.,
+           1., 1., 1., 11.36686532,
+           10.53618749, 10.18376884, 10.06007654, 10.01933637,
+           10.00619248, 10.00197996, 10.00063274, 10.00020217,
+           10.00006459, 10.00002064, 10.00000659, 10.00000211,
+           10.00000067, 10.00000022, 10.00000007, 10.00000002,
+           10.00000001, 10., 10., 10.,
+           10., 10., 10., 10.,
+           10., 10., 10., 10.,
+           10.])
 
-        np.testing.assert_almost_equal(self.model.results.slider_velocity, truth, 8)
+        np.testing.assert_almost_equal(self.model.results.slider_velocity,
+                                       truth, 8)
 
     def test_time(self):
         truth = np.array(
@@ -1000,5 +990,5 @@ class TestNagataOneStateVar(object):
            270., 280., 290., 300.,
            310.])
 
-        np.testing.assert_almost_equal(self.model.results.loadpoint_displacement, truth, 8)
-        
+        np.testing.assert_almost_equal(self.model.results.
+                                       loadpoint_displacement, truth, 8)

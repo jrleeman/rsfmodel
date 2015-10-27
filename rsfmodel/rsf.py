@@ -42,7 +42,22 @@ class Model(LoadingSystem):
                                               "states", "slider_displacement"])
 
     def _integrationStep(self, w, t, system):
-        """ Do the calculation for a time-step """
+        """ Do the calculation for a time-step
+
+        Parameters
+        ----------
+        w : list
+        Current values of integration variables. Friction first, state variables following.
+        t : float
+        Time at which integration is occurring
+        system : model object
+        Model that is being solved
+
+        Returns
+        -------
+        step_results : list
+        Results of the integration step. dmu/dt first, followed by dtheta/dt for state variables.
+        """
 
         system.mu = w[0]
         for i, state_variable in enumerate(system.state_relations):
@@ -101,6 +116,17 @@ class Model(LoadingSystem):
         """
         Runs the integrator to actually solve the model and returns a
         named tuple of results.
+
+        Parameters
+        ----------
+        threshold : float
+            Threshold used to determine when integration care should be taken. This threshold is
+            in terms of maximum load-point acceleration before time step is marked.
+
+        Returns
+        -------
+        results : named tuple
+            Results of the model
         """
         odeint_kwargs = dict(rtol=1e-12, atol=1e-12, mxstep=5000)
         odeint_kwargs.update(kwargs)
