@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/jrleeman/rsfmodel.svg?branch=master)](https://travis-ci.org/jrleeman/rsfmodel)
 [![Coverage Status](https://coveralls.io/repos/jrleeman/rsfmodel/badge.svg?branch=master&service=github)](https://coveralls.io/github/jrleeman/rsfmodel?branch=master)
+[![Doc Status](https://readthedocs.org/projects/rsfmodel/badge/)](http://rsfmodel.readthedocs.org)
 
 # Rate and State Friction Toolkit
 

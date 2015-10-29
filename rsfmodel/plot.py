@@ -20,6 +20,7 @@ def phasePlot(system, fig=None, ax1=None):
         Figure object that contains plot
     ax1 : axes object
         Axes object that contains plot
+
     """
     if fig is None:
         fig = plt.figure(figsize=(8, 7))

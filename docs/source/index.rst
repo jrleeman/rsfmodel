@@ -6,13 +6,15 @@
 Welcome to rsfmodel's documentation!
 ====================================
 
+Here we document the API and installation of rsfmodel.
+
 Contents:
 
 .. toctree::
-   :maxdepth: 2
-   
-   modules.rst
-   rsfmodel.rst
+   :maxdepth: 1
+
+   installationguide
+   api/index
 
 Indices and tables
 ==================
