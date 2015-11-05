@@ -13,7 +13,23 @@ class IncompleteModelError(Exception):
 
 
 class LoadingSystem(object):
-    """ Contains attributes relating to the external loading system """
+    """
+    Contains attributes relating to the external loading system.
+
+    Attributes
+    ----------
+    k : float
+        System stiffness in units of fricton/displacement.
+    time : list
+        List of time values at which the system will be solved.
+    loadpoint_velocity : list
+        List of the imposed loadpoint velocities at the corresponding time
+        value. Must be same length as time.
+    v : float
+        Slider velocity
+    mu : float
+        The current friciton value of the system.
+    """
     def __init__(self):
         self.k = None
         self.time = None  # List of times we want answers at
@@ -30,7 +46,22 @@ class LoadingSystem(object):
 
 
 class Model(LoadingSystem):
-    """ Houses the model coefficients and does the integration """
+    """
+    Houses the model coefficients and does the integration.
+
+    Attributes
+    ----------
+    mu0 : float
+        Reference friction value at vref.
+    a : float
+        Rate and state constitutive parameter.
+    vref : float
+        System reference velocity at which the reference friction is measured.
+    state_relations : list
+        List of state relations to be used when calculating the model.
+    results : namedtuple
+        Stores all model outputs.
+    """
     def __init__(self):
         LoadingSystem.__init__(self)
         self.mu0 = 0.6
@@ -79,6 +110,10 @@ class Model(LoadingSystem):
         return step_results
 
     def readyCheck(self):
+        """
+        Determines if all necessary parameters are set to run the model.
+        Will raise appropriate error as necessary.
+        """
         if self.a is None:
             raise IncompleteModelError('Parameter a is None')
         elif self.vref is None:
@@ -105,6 +140,17 @@ class Model(LoadingSystem):
         """
         Calculates accelearation and thresholds based on that to find areas
         that are likely problematic to integrate.
+
+        Parameters
+        ----------
+        threshold : float
+            When the absolute value of acceleration exceeds this value, the
+            time is marked as "critical" for integration.
+
+        Returns
+        -------
+        critical_times : list
+            List of time values at which integration care should be taken.
         """
         velocity_gradient = np.gradient(self.loadpoint_velocity)
         time_gradient = np.gradient(self.time)
@@ -181,7 +227,17 @@ class Model(LoadingSystem):
     def _check_slider_displacement(self, tol=0.01):
         """
         Checks that the slider displacement total is within a given tolerance
-        of the prediction from steady-state theory. Defaults to 1%
+        of the prediction from steady-state theory. Defaults to 1%.
+
+        Parameters
+        ----------
+        tol : float
+            Maximum error tolerated before returns False.
+
+        Returns
+        -------
+        Is Within Tolerance : boolean
+            False if out of tolerance, true if in tolerance.
         """
         a_minus_b = self.a
         for state_relation in self.state_relations:
@@ -202,9 +258,36 @@ class Model(LoadingSystem):
             return True
 
     def _calculateContinuousDisplacement(self, velocity):
+        """
+        Calculate the displacement of the slider by integrating the velocity.
+
+        Parameters
+        ----------
+        velocity : list
+            List of velocity values.
+
+        Returns
+        -------
+        displacement : ndarray
+            List of displacement values.
+        """
         return integrate.cumtrapz(velocity, self.time, initial=0)
 
     def _calculateDiscreteDisplacement(self, velocity):
+        """
+        Calculate displacement in a discrete way that returns an equal size
+        result.
+
+        Parameters
+        ----------
+        velocity : list
+            List of velocity values.
+
+        Returns
+        -------
+        displacement : ndarray
+            List of displacement values.
+        """
         dt = np.ediff1d(self.results.time)
         displacement = np.cumsum(velocity[:-1] * dt)
         displacement = np.insert(displacement, 0, 0)
