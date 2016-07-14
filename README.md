@@ -9,6 +9,11 @@ such as velocity steps and time dependent frictional healing. The rate and
 state framework was laid out in Dieterich (1979), and furthered by Ruina(1983).
 A summary article by Chris Marone (1998) provides a solid background.
 
+### SciPy 2016 Materials
+* J.R. Leeman, R. May, C. Marone, and D. Saffer. Modeling Rate-and-State Friction with Python. SciPy Scientific Programming, 2016. Talk.
+* [Abstract](http://johnrleeman.com/pubs/2016/SciPy2016_Abstract_Leeman.html)
+* [Slides](http://johnrleeman.com/pubs/2016/Leeman_SciPy_2016.pdf)
+* [Notebook](http://johnrleeman.com/pubs/2016/rsf_widgets_2sv_dashboard.ipynb)
 
 ### Examples of use
 
