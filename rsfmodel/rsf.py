@@ -72,6 +72,42 @@ class Model(LoadingSystem):
                                               "slider_velocity", "friction",
                                               "states", "slider_displacement"])
 
+
+    def savetxt(self, fname, line_ending='\n'):
+        """ Save the output of the model to a csv file.
+        """
+        with open(fname, 'w') as f:
+            # Model Properties
+            f.write(f'mu0 = {self.mu0}{line_ending}')
+            f.write(f'a = {self.a}{line_ending}')
+            f.write(f'vref = {self.vref}{line_ending}')
+            f.write(f'k = {self.k}{line_ending}')
+            for i, state in enumerate(self.state_relations):
+                f.write(f'State {i + 1}{line_ending}')
+                f.write(str(state))
+
+            # Header
+            f.write('Time,Loadpoint_Displacement,Slider_Velocity,Friction,')
+            f.write(f'Slider_Displacement')
+            for i, state in enumerate(self.state_relations):
+                f.write(f',State_{i + 1}')
+            f.write(line_ending)
+
+            # Data
+            i = 0
+            for row in zip(self.results.time,
+                           self.results.loadpoint_displacement,
+                           self.results.slider_velocity,
+                           self.results.friction,
+                           self.results.slider_displacement):
+                 t, lp_disp, s_vel, fric, s_disp = row
+                 f.write(f'{t},{lp_disp},{s_vel},{fric},{s_disp}')
+                 for state in self.state_relations:
+                     f.write(f',{state.state[i]}')
+                 f.write(f'{line_ending}')
+                 i += 1
+
+
     def _integrationStep(self, w, t, system):
         """ Do the calculation for a time-step
 

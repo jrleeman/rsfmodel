@@ -45,6 +45,12 @@ class DieterichState(StateRelation):
        results and constitutive equations." Journal of Geophysical
        Research: Solid Earth (19782012) 84.B5 (1979): 2161-2168.
     """
+    def __str__(self):
+        s = 'Dieterich State Relation\n'
+        s += f'b = {self.b}\n'
+        s += f'Dc = {self.Dc}\n'
+        return s
+
     def set_steady_state(self, system):
         self.state = self.Dc/system.vref
 
@@ -65,6 +71,12 @@ class RuinaState(StateRelation):
     .. [#Ruina1983] Ruina, Andy. "Slip instability and state variable friction laws."
        J. geophys. Res 88.10 (1983): 359-10.
     """
+    def __str__(self):
+        s = 'Ruina State Relation\n'
+        s += f'b = {self.b}\n'
+        s += f'Dc = {self.Dc}\n'
+        return s
+
     def set_steady_state(self, system):
         self.state = self.Dc/system.vref
 
@@ -85,6 +97,12 @@ class PrzState(StateRelation):
        "Self-healing slip pulse on a frictional surface."
        Journal of the Mechanics and Physics of Solids 43.9 (1995): 1461-1495.
     """
+    def __str__(self):
+        s = 'PRZ State Relation\n'
+        s += f'b = {self.b}\n'
+        s += f'Dc = {self.Dc}\n'
+        return s
+
     def set_steady_state(self, system):
         self.state = 2 * self.Dc / system.v
         self.prz_vref = system.vref/(2*self.Dc)
@@ -117,6 +135,13 @@ class NagataState(StateRelation):
        evolution laws separately with laboratory data," Journal of Geophysical
        Research: Solid Earth, vol 117, 2012.
     """
+    def __str__(self):
+        s = 'Nagata State Relation\n'
+        s += f'b = {self.b}\n'
+        s += f'c = {self.c}\n'
+        s += f'Dc = {self.Dc}\n'
+        return s
+
     def __init__(self):
         StateRelation.__init__(self)
         self.c = None
