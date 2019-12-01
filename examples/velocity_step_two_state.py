@@ -33,6 +33,9 @@ model.loadpoint_velocity = lp_velocity
 # Run the model!
 model.solve()
 
+# Save the model output
+model.savetxt('model_output.txt')
+
 # Make the 2D phase plot
 plot.phasePlot(model)
 
