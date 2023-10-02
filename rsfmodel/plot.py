@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 
 def phasePlot(system, fig=None, ax1=None):
     """ Make a phase plot of the current model.
@@ -85,7 +84,7 @@ def phasePlot3D(system, fig=None, ax1=None, state_variable=2):
         fig = plt.figure(figsize=(8, 7))
 
     if ax1 is None:
-        ax1 = fig.gca(projection='3d')
+        ax1 = fig.add_subplot(projection='3d')
 
     v_ratio = np.log(system.results.slider_velocity/system.vref)
     ax1.plot(v_ratio, system.results.states[:, state_variable-1],
